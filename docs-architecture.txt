@@ -1,0 +1,26 @@
+docs/
+|-- known-issues/
+|   `-- refresh-token-rotation-concurrency.md
+|-- plans/
+|   |-- packages-audit-2026-05-17.md
+|   |-- parallel-worktree-isolation.md
+|   |-- project-mvp.md
+|   `-- web-e2e-adoption.md
+|-- sprints/
+|   |-- archive/
+|   `-- parent-report-foundation.md
+|-- templates/
+|   |-- engineer-summary.md
+|   |-- handoff-queue.md
+|   |-- main-plan.md
+|   `-- sprint.md
+|-- testing-screenshots/
+|   |-- 01-login-page.png
+|   |-- 02-today.png
+|   |-- 03-roster.png
+|   |-- 04-dashboard.png
+|    `-- 05-report.png
+|-- codebase-structure.md
+|-- decisions.md
+|-- engineer-protocol.md
+`-- handoff-queue.md
