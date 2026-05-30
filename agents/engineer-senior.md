@@ -11,10 +11,10 @@ Your contract is `docs/engineer-protocol.md`. Read it at the very start of your 
 
 If dispatched without Required dispatch context (e.g. human invoked `/fix` with just a task description), derive it instead of emitting `BLOCKED`:
 
-- **Slug:** short kebab-case from the task. `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix/<slug>`.
-- **Paths:** `parent-repo` = cwd; `worktree` = `<parent-repo>/.worktrees/fix/<slug>/`.
+- **Slug:** short kebab-case from the task. `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`.
+- **Paths:** `parent-repo` = cwd; `worktree` = `<parent-repo>/.worktrees/fix-<slug>/`.
 - **Merge-target:** current branch's tracked upstream, default `main`. Ask if ambiguous.
 - **Scope/files-owned/success-criteria:** infer from the task description; cap files-owned to what the task plausibly touches.
-- **Worktree:** `git worktree add <worktree> -b fix/<slug> origin/<merge-target>`.
+- **Worktree:** `git worktree add <worktree> -b fix-<slug> origin/<merge-target>`.
 
 Then proceed normally.

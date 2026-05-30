@@ -4,7 +4,7 @@ Inter-agent communication. **The human is the ultimate arbiter** — `BLOCKED` e
 
 Format: `` - `[YYYY-MM-DD · TYPE · from → to · sprint: <slug> · slice: <code>]` <body> **Resolution:** pending `` (or `**Resolution:** <YYYY-MM-DD> — <what changed> [optional link to docs/decisions.md#anchor]`).
 
-Entries are **date-keyed and append-only** (newest at the tail) — reference one by its `[date · from → to]` header, never by position. Glance at the tail to judge whether prune is due (>100 entries). `from` / `to` may be any of `engineer-junior` / `engineer-senior` / `orchestrator` / `sprint-planner` / `planner` / `human` — anyone can address anyone. Omit `slice:` for sprint-wide entries; omit `sprint:` for project-wide entries.
+Entries are **date-keyed and append-only** (newest at the tail) — reference one by its `[date · from → to]` header plus a few words of its body, never by position (a same-day header can repeat; the body disambiguates). Glance at the tail to judge whether prune is due (>100 entries). `from` / `to` may be any of `engineer-junior` / `engineer-senior` / `orchestrator` / `sprint-planner` / `planner` / `human` — anyone can address anyone. Omit `slice:` for sprint-wide entries; omit `sprint:` for project-wide entries.
 
 Types: `BLOCKED` halts · `PENDING` defers (defaults taken, knowingly-incomplete spots, scope-creep opportunities) · `SOLVED` informational, only emitted alongside a `BLOCKED` or `PENDING` to mark a related thing resolved inline.
 

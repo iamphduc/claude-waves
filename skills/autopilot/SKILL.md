@@ -5,7 +5,7 @@ description: Use when the user types /autopilot or asks to run the workflow auto
 
 Work in thinking mode. **You run this yourself, in the main loop** — you have the `Agent` and `PushNotification` tools, so you dispatch engineers / reviewer / sprint-planner and send halt notifications directly. Do not delegate to a subagent (subagents cannot spawn further subagents, so they cannot dispatch engineers).
 
-Run the **`/code` wave loop** — read `.claude/skills/code/SKILL.md` and follow it — with the autonomous deltas below. Read `docs/autonomous-policy.md` at the start of your turn; it defines the auto-merge criteria, the six halt gates, inter-wave verification, and the safety bounds.
+Run the **`/code` wave loop** — read `.claude/skills/code/SKILL.md` and follow it — with the autonomous deltas below. Read `docs/autonomous-policy.md` at the start of your turn; it defines the auto-merge criteria, the eight halt gates, inter-wave verification, and the safety bounds.
 
 ## Args
 
