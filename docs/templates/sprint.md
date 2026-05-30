@@ -30,7 +30,7 @@ Wave membership lives in the **Wave** column; slices sharing a wave run in paral
 - **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail.
 - **Agent:** derived from Difficulty — **1–2 → `engineer-junior`**, **3–5 → `engineer-senior`**. The board is canonical; per-slice detail never re-states the score or agent.
 - **Wave:** slices sharing a wave run in parallel and **must own disjoint file sets**. If two slices need the same file, push the dependent one to a later wave.
-- **Branch naming:** `<sprint-slug>/<slice-code>` (kebab-case).
+- **Branch naming:** `<sprint-slug>-<slice-code>` (kebab-case, **flat — no `/`** so a slice branch can't D/F-collide with a `<sprint-slug>`-named integration branch used as the merge-target).
 - **Files owned:** explicit paths, verified to exist; cross-checked for disjointness within the wave.
 
 ## Sprint summary

@@ -36,7 +36,7 @@ Otherwise merge with a **merge commit** (not squash): `gh pr merge <url> --merge
 
 The runtime smoke (`/code` step 3a) runs before the reviewer in autopilot too. It **auto-fixes** failures it can (commit on the smoke branch, re-smoke) and only halts per gate 7 when a failure needs a human — so a clean run never stops here.
 
-On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` describing the gate and pointing at the artifact (PR URL, queue entry #, sprint slug, command output), then `PushNotification` with the same one-liner, then end the turn. Resume via human re-invoking `/autopilot`.
+On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` describing the gate and pointing at the artifact (PR URL, queue entry, sprint slug, command output), then `PushNotification` with the same one-liner, then end the turn. Resume via human re-invoking `/autopilot`.
 
 ## Inter-wave verification
 

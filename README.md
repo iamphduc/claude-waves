@@ -51,6 +51,7 @@ All workflow state lives on disk — any agent can be resumed cold from a fresh 
 
 ## When things halt
 
+- **Preflight** — `/code`/`/autopilot` halts before the first wave if there's no `origin` remote, the merge-target isn't pushed, or a sprint prerequisite (a new dep, the docs) isn't on the merge-target. Push/set it up, re-run.
 - **Wave merge gate** — expected. Merge PRs in any order, reply `continue`.
 - **Runtime smoke** — the main loop runs the app before review; it auto-fixes bugs it can and only halts if a runtime failure needs your judgment, or if `docs/codebase-structure.md` has no `## Smoke recipe` to bring the app up (fail-closed — add one).
 - **Escalation gate (autopilot)** — a PR is mechanically mergeable but carries a risk signal (low-confidence slice, non-trivial smoke fix, or a `SEVERE:` review finding). Autopilot merged the clean PRs and left this one for you — review and merge it, reply `continue`.

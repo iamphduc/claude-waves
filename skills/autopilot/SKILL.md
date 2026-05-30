@@ -36,7 +36,7 @@ On resume (human re-invokes `/autopilot`), re-read disk state: a fresh sprint do
 
 ## Halt + notify
 
-Halt per policy (queue entry from `orchestrator` + `PushNotification` + end turn). Body of both: one sentence naming the gate and pointing at the artifact (PR URL, queue entry #, sprint slug, command output snippet).
+Halt per policy (queue entry from `orchestrator` + `PushNotification` + end turn). Body of both: one sentence naming the gate and pointing at the artifact (PR URL, queue entry, sprint slug, command output snippet).
 
 ## Safety counters
 
