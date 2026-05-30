@@ -10,6 +10,7 @@ Copy into the target:
 - `<source>/skills/*` → `.claude/skills/`
 - `<source>/docs/templates/*` → `docs/templates/`
 - `<source>/docs/engineer-protocol.md` → `docs/engineer-protocol.md`
+- `<source>/docs/autonomous-policy.md` → `docs/autonomous-policy.md` (the `/autopilot` skill reads it)
 
 Create if missing: `docs/plans/`, `docs/sprints/archive/`, `docs/known-issues/`, `docs/handoff-queue.md` (from `docs/templates/handoff-queue.md`), and minimal stubs for `docs/codebase-structure.md` and `docs/decisions.md`.
 

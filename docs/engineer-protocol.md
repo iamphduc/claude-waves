@@ -2,7 +2,7 @@
 
 Both `engineer-junior` and `engineer-senior` follow this contract. The agent files in `agents/` differ only in frontmatter (model + description); this doc is the body.
 
-You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the orchestrator parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
+You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the **loop driver** (the main loop running `/code` or `/autopilot`; "the orchestrator" in these docs) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
 
 ## Required dispatch context
 

@@ -5,7 +5,7 @@ Multi-agent Claude Code workflow: strategy → sprint → parallel implementatio
 ## Prerequisites
 
 - Claude Code installed.
-- `gh` CLI installed and authenticated (orchestrator and engineers use it for PRs).
+- `gh` CLI installed and authenticated (the wave loop and engineers use it for PRs).
 - `git` worktree support (any modern git).
 
 ## Install in a target repo
@@ -21,7 +21,7 @@ From within the target repo, run `/bootstrap`. It copies `agents/`, `skills/`, `
 | 1 | `/plan` | Planner interviews you (via `grill-me`), writes `docs/plans/<slug>.md` |
 | 2 | `/sprint [slug]` | Sprint-planner drafts `docs/sprints/<slug>.md` from a plan |
 | — | *(read the sprint doc)* | **Your quality gate** — catches bad wave grouping or overlapping file ownership |
-| 3 | `/code [slug]` | Orchestrator pre-creates worktrees, dispatches engineers per wave, halts for you to merge PRs |
+| 3 | `/code [slug]` | The main loop runs the wave loop directly: pre-creates worktrees, dispatches engineers per wave, halts for you to merge PRs |
 | — | merge wave PRs, reply `continue` | Repeat per wave |
 | 4 | *(reviewer auto-fires)* | Last-defense audit; opens a follow-up PR or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives. `continue` again to chain into the next sprint. |
@@ -59,9 +59,12 @@ All workflow state lives on disk — any agent can be resumed cold from a fresh 
 ## Layout
 
 ```
-agents/        # subagent definitions (planner, sprint-planner, orchestrator,
-               # orchestrator-autonomous, engineer-junior, engineer-senior, reviewer)
-skills/        # slash-command triggers (plan, sprint, code, review, fix, bootstrap, autopilot)
+agents/        # subagent definitions (planner, sprint-planner,
+               # engineer-junior, engineer-senior, reviewer)
+skills/        # slash-command triggers (plan, sprint, code, review, fix,
+               # bootstrap, autopilot). code + autopilot carry the wave loop,
+               # which the main loop runs directly (no orchestrator subagent —
+               # subagents can't dispatch the engineer subagents the loop needs)
 docs/
   templates/   # copied into target repos by /bootstrap
   engineer-protocol.md   # shared contract for engineers and reviewer

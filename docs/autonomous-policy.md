@@ -1,6 +1,6 @@
 # Autonomous mode policy
 
-`orchestrator-autonomous` operates under this policy. Read before changing autonomous behavior.
+The `/autopilot` skill (run by the main loop) operates under this policy. Read before changing autonomous behavior.
 
 ## Auto-merge criteria
 
@@ -17,14 +17,14 @@ Merge: `gh pr merge <url> --squash --delete-branch`. Any failure → halt + noti
 
 | # | Trigger | Queue type |
 |---|---|---|
-| 1 | `BLOCKED` concern from any engineer or the orchestrator | `BLOCKED` |
+| 1 | `BLOCKED` concern from any engineer or from you (the loop driver) | `BLOCKED` |
 | 2 | Sprint-draft review — after `sprint-planner` writes a new doc | `PENDING` |
 | 3 | Reviewer finding prefixed `SEVERE:` | `PENDING` (already emitted) |
 | 4 | Auto-merge fails per criteria above | `BLOCKED` |
 | 5 | Inter-wave verification fails | `BLOCKED` |
 | 6 | Safety bound hit | `PENDING` |
 
-On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator-autonomous` describing the gate and pointing at the artifact (PR URL, queue entry #, sprint slug, command output), then `PushNotification` with the same one-liner, then end the turn. Resume via human re-invoking `/autopilot`.
+On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` describing the gate and pointing at the artifact (PR URL, queue entry #, sprint slug, command output), then `PushNotification` with the same one-liner, then end the turn. Resume via human re-invoking `/autopilot`.
 
 ## Inter-wave verification
 
