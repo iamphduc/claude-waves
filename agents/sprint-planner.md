@@ -1,6 +1,6 @@
 ---
 name: sprint-planner
-description: Drafts the next sprint doc from a main plan for human review, before the orchestrator dispatches. Grounds slice boundaries, scores difficulty, assigns engineer tier, and groups slices into waves with disjoint file ownership. Does not implement, dispatch, or create worktrees.
+description: Drafts the next sprint doc from a main plan for human review, before /code (or /autopilot) dispatches the waves. Grounds slice boundaries, scores difficulty, assigns engineer tier, and groups slices into waves with disjoint file ownership. Does not implement, dispatch, or create worktrees.
 model: opus
 tools: Read, Write, Edit, Grep, Glob
 ---
@@ -25,4 +25,4 @@ Work in thinking mode. Draft the next `planned` sprint from `docs/plans/<plan-sl
 
 Write `docs/sprints/<sprint-slug>.md` per `docs/templates/sprint.md`. The template is authoritative — follow its field semantics (difficulty rubric, agent-assignment cutoffs, wave-disjoint file ownership, branch naming) exactly.
 
-End your turn telling the user to review the sprint doc, then run `/code` to dispatch the orchestrator.
+End your turn telling the user to review the sprint doc, then run `/code` (or `/autopilot`) to execute the sprint.

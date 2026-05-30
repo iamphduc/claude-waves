@@ -2,7 +2,7 @@
 
 Both `engineer-junior` and `engineer-senior` follow this contract. The agent files in `agents/` differ only in frontmatter (model + description); this doc is the body.
 
-You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the orchestrator parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
+You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the **loop driver** (the main loop running `/code` or `/autopilot`; "the orchestrator" in these docs) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
 
 ## Required dispatch context
 
@@ -34,7 +34,7 @@ Any `BLOCKED` → stop immediately. Do not push, do not open a PR, do not clean 
 
 ## Shipping the work (only when no BLOCKED)
 
-1. **Verify.** Run the project's checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note in the summary's Verification field and cap Confidence at `medium`.
+1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note in the summary's Static checks field and cap Confidence at `medium`. These are **static only** — you cannot start the app or drive a browser in your sandbox, so **do not claim runtime or visual behavior works** (green static checks routinely hide runtime regressions). Instead, list every runtime-observable behavior your slice introduces (a page renders, a route hard-loads, a control works, a font/style applies) in the summary's `Runtime to smoke` field; the main-loop smoke gate verifies them after merge.
 2. **Commit, push, open the PR** against the merge-target. Prefix the commit message and PR title with the slice code.
 3. **Clean up:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On any failure, surface `PENDING`, set Cleanup to `partial`, and stop the rest of cleanup.
 

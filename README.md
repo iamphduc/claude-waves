@@ -5,7 +5,7 @@ Multi-agent Claude Code workflow: strategy → sprint → parallel implementatio
 ## Prerequisites
 
 - Claude Code installed.
-- `gh` CLI installed and authenticated (orchestrator and engineers use it for PRs).
+- `gh` CLI installed and authenticated (the wave loop and engineers use it for PRs).
 - `git` worktree support (any modern git).
 
 ## Install in a target repo
@@ -21,9 +21,11 @@ From within the target repo, run `/bootstrap`. It copies `agents/`, `skills/`, `
 | 1 | `/plan` | Planner interviews you (via `grill-me`), writes `docs/plans/<slug>.md` |
 | 2 | `/sprint [slug]` | Sprint-planner drafts `docs/sprints/<slug>.md` from a plan |
 | — | *(read the sprint doc)* | **Your quality gate** — catches bad wave grouping or overlapping file ownership |
-| 3 | `/code [slug]` | Orchestrator pre-creates worktrees, dispatches engineers per wave, halts for you to merge PRs |
+| 3 | `/code [slug]` | The main loop runs the wave loop directly: pre-creates worktrees, dispatches engineers per wave, halts for you to merge PRs |
 | — | merge wave PRs, reply `continue` | Repeat per wave |
-| 4 | *(reviewer auto-fires)* | Last-defense audit; opens a follow-up PR or returns `PR: clean` |
+| 4 | *(runtime smoke auto-fires)* | Main loop starts the app and exercises each slice's runtime behavior (per the `## Smoke recipe` in `docs/codebase-structure.md`); auto-fixes bugs static checks missed and opens a smoke PR, or proceeds clean. Catches the regressions `typecheck/lint/build` can't see |
+| — | merge smoke PR (if any), reply `continue` | — |
+| 5 | *(reviewer auto-fires)* | Last-defense code audit; opens a follow-up PR or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives. `continue` again to chain into the next sprint. |
 
 Each agent ends its turn telling you the next step.
@@ -50,6 +52,8 @@ All workflow state lives on disk — any agent can be resumed cold from a fresh 
 ## When things halt
 
 - **Wave merge gate** — expected. Merge PRs in any order, reply `continue`.
+- **Runtime smoke** — the main loop runs the app before review; it auto-fixes bugs it can and only halts if a runtime failure needs your judgment, or if `docs/codebase-structure.md` has no `## Smoke recipe` to bring the app up (fail-closed — add one).
+- **Escalation gate (autopilot)** — a PR is mechanically mergeable but carries a risk signal (low-confidence slice, non-trivial smoke fix, or a `SEVERE:` review finding). Autopilot merged the clean PRs and left this one for you — review and merge it, reply `continue`.
 - **`BLOCKED` in handoff-queue** — read the entry, resolve the underlying issue or update the entry's `Resolution:` line, reply.
 - **Sprint complete** — reply `continue` to chain into the next sprint (or `/sprint` first if no `planned` row remains in the plan).
 - **Engineer PR has failing CI but local tests passed** — no auto-handler. Investigate manually; push a fix to the branch or close the PR and re-dispatch.
@@ -59,9 +63,12 @@ All workflow state lives on disk — any agent can be resumed cold from a fresh 
 ## Layout
 
 ```
-agents/        # subagent definitions (planner, sprint-planner, orchestrator,
-               # orchestrator-autonomous, engineer-junior, engineer-senior, reviewer)
-skills/        # slash-command triggers (plan, sprint, code, review, fix, bootstrap, autopilot)
+agents/        # subagent definitions (planner, sprint-planner,
+               # engineer-junior, engineer-senior, reviewer)
+skills/        # slash-command triggers (plan, sprint, code, review, fix,
+               # bootstrap, autopilot). code + autopilot carry the wave loop,
+               # which the main loop runs directly (no orchestrator subagent —
+               # subagents can't dispatch the engineer subagents the loop needs)
 docs/
   templates/   # copied into target repos by /bootstrap
   engineer-protocol.md   # shared contract for engineers and reviewer
@@ -69,7 +76,7 @@ docs/
 
 ## Autonomous flow
 
-`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the workflow unattended across a whole plan: auto-merges PRs, verifies trunk between waves, chains into the next sprint, halts + notifies via `PushNotification` at six gates. Defaults: `--max-sprints` unlimited, `--max-waves=20`, `--max-runtime=4h`.
+`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the workflow unattended across a whole plan: auto-merges clean PRs with a **merge commit** (escalating low-confidence / non-trivial / `SEVERE:` PRs to you), verifies trunk between waves, chains into the next sprint, runs the runtime-smoke gate before each sprint's review, halts + notifies via `PushNotification` at eight gates. Invoking `/autopilot` is your standing consent to the auto-merges. Defaults: `--max-sprints` unlimited, `--max-waves=20`, `--max-runtime=4h`.
 
 Full criteria, gates, and detection rules live in `docs/autonomous-policy.md`. Resume after halt: re-invoke `/autopilot` (same args).
 
