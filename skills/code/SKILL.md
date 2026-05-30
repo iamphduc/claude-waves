@@ -45,14 +45,23 @@ For each row in the plan's Sprint sequence:
 
 3. **Sprint complete** when all functional waves are `done`:
 
-   a. **Dispatch the reviewer** (Agent call, subagent_type `reviewer`) as a final review wave — it is the sprint's last defense layer (simplify code, simplify tests, find bugs, check security), starting from the sprint's diff but free to chase a finding's call chain into adjacent code:
-      - **Resume mid-review:** if branch `<sprint-slug>/review` already exists, check for an associated PR. PR open → re-end turn pointing at it per (b). PR merged → sync (`checkout` + `pull`) and skip to (c). No PR → reset the worktree (`git reset --hard origin/<merge-target> && git clean -fd`) and re-dispatch, skipping pre-create.
+   a. **Runtime smoke (main-loop gate).** Static checks (engineers) and the code reviewer cannot see runtime or visual regressions — this gate runs the actual app and exercises the sprint's runtime-observable behavior. **You run it from the main loop**: you have a browser via the chrome-devtools MCP and can start servers; it cannot be delegated to a sandboxed agent. Runs in both `/code` and `/autopilot` — it is a hard gate.
+      - **Recipe.** Read the `## Smoke recipe` section of `docs/codebase-structure.md` (bring-up commands, DB migrate/seed, login creds, key URLs). If it is missing or insufficient to start the app, **halt** and ask the human to add it — do not skip the gate (fail closed).
+      - **Worktree.** Pre-create `<parent-repo>/.worktrees/<sprint-slug>/smoke/` on branch `<sprint-slug>/smoke` from `origin/<merge-target>` (mirrors the reviewer). Smoke fixes land here, never on the merge-target directly.
+      - **Bring up** the app from that worktree per the recipe: install if needed, migrate + seed the DB, start the server(s); confirm reachable before testing. If the deployed preview is auth-walled (e.g. Vercel SSO), smoke locally.
+      - **Checklist.** Collect the runtime-observable behaviors to verify: each engineer summary's `Runtime to smoke` field plus the sprint doc's per-slice runtime success criteria. Drive the app (browser / curl) and verify against the actual page/DOM/response, never against assumptions.
+      - **On failure → auto-fix, then re-smoke.** Diagnose, fix in the worktree, commit (slice-prefixed), re-run the failed check; repeat until green. **Halt** instead of fixing when a failure is unfixable, ambiguous, or needs a judgment call (logic, data, or a multi-file change) — end with the diagnosis (`/autopilot` notifies). Log every fix and finding to `docs/handoff-queue.md`.
+      - **Record + tear down.** Append a smoke-run summary to the sprint doc (checked / found+fixed / deferred). Stop every server you started; leave the worktree for the PR.
+      - **Ship.** If you committed fixes: push `<sprint-slug>/smoke`, open a PR, and **hand back for merge** (`/code`) or auto-merge it (`/autopilot`) before continuing. If nothing needed fixing: smoke clean, no PR — proceed.
+
+   b. **Dispatch the reviewer** (Agent call, subagent_type `reviewer`) as a final review wave — it is the sprint's last defense layer (simplify code, simplify tests, find bugs, check security), starting from the sprint's diff (including any smoke fixes) but free to chase a finding's call chain into adjacent code:
+      - **Resume mid-review:** if branch `<sprint-slug>/review` already exists, check for an associated PR. PR open → re-end turn pointing at it per (c). PR merged → sync (`checkout` + `pull`) and skip to (d). No PR → reset the worktree (`git reset --hard origin/<merge-target> && git clean -fd`) and re-dispatch, skipping pre-create.
       - Pre-create worktree at `<parent-repo>/.worktrees/<sprint-slug>/review/` on branch `<sprint-slug>/review` from `origin/<merge-target>`.
       - Single `Agent` call (no `isolation`), passing the same Required dispatch context an engineer would get, plus the sprint slug and the list of merged slice branches from this sprint.
-      - Translate any `PENDING` / `SOLVED` concerns into `docs/handoff-queue.md` as usual. Reviewer does not emit `BLOCKED`; severe findings come through as `PENDING` with body prefixed `SEVERE:` — surface those in the halt message in (b) if a PR is also shipped, or in the end-of-turn message in (g) if not.
-      - If reviewer returns a PR URL, proceed to (b). If reviewer returns `PR: clean`, skip to (c).
+      - Translate any `PENDING` / `SOLVED` concerns into `docs/handoff-queue.md` as usual. Reviewer does not emit `BLOCKED`; severe findings come through as `PENDING` with body prefixed `SEVERE:` — surface those in the halt message in (c) if a PR is also shipped, or in the end-of-turn message in (h) if not.
+      - If reviewer returns a PR URL, proceed to (c). If reviewer returns `PR: clean`, skip to (d).
 
-   b. **Hand back for review-PR merge.** End the turn with:
+   c. **Hand back for review-PR merge.** End the turn with:
 
       ```
       Sprint <slug> review awaiting merge:
@@ -61,13 +70,13 @@ For each row in the plan's Sprint sequence:
       Merge, then reply `continue` to archive.
       ```
 
-      Do not poll, auto-merge, or proceed. On resume, `gh pr view <URL> --json mergedAt,state`; if unmerged, re-end the turn. Once confirmed, `git checkout <merge-target>` then `git pull origin <merge-target>` in the parent repo, then proceed to (c).
+      Do not poll, auto-merge, or proceed. On resume, `gh pr view <URL> --json mergedAt,state`; if unmerged, re-end the turn. Once confirmed, `git checkout <merge-target>` then `git pull origin <merge-target>` in the parent repo, then proceed to (d).
 
-   c. Append the Sprint summary section to the sprint doc per `docs/templates/sprint.md` (slices shipped, queue entries resolved/deferred, approximate token cost, reviewer outcome).
-   d. Flip the sprint doc header `Status:` to `archived`, then `mv` the file to `docs/sprints/archive/`.
-   e. **Prune the handoff queue.** Renumber entries from `#1` (oldest). If resolved entries exceed 100, drop the oldest resolved ones until ≤100 remain; never drop entries with `Resolution: pending`.
-   f. `Edit` the just-completed sprint's row in `docs/plans/<plan-slug>.md`: set its Status cell to `done`. If unresolved `PENDING` entries warrant reshaping later sprints (rescope, reorder), edit those rows too — but only that; never destructively rewrite history.
-   g. End the turn with `Sprint <slug> complete. Reply 'continue' to start the next sprint.`
+   d. Append the Sprint summary section to the sprint doc per `docs/templates/sprint.md` (slices shipped, **runtime-smoke outcome**, queue entries resolved/deferred, approximate token cost, reviewer outcome).
+   e. Flip the sprint doc header `Status:` to `archived`, then `mv` the file to `docs/sprints/archive/`.
+   f. **Prune the handoff queue.** Renumber entries from `#1` (oldest). If resolved entries exceed 100, drop the oldest resolved ones until ≤100 remain; never drop entries with `Resolution: pending`.
+   g. `Edit` the just-completed sprint's row in `docs/plans/<plan-slug>.md`: set its Status cell to `done`. If unresolved `PENDING` entries warrant reshaping later sprints (rescope, reorder), edit those rows too — but only that; never destructively rewrite history.
+   h. End the turn with `Sprint <slug> complete. Reply 'continue' to start the next sprint.`
 
 ## Unattended variant
 

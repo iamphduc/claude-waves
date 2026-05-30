@@ -23,6 +23,9 @@ Merge: `gh pr merge <url> --squash --delete-branch`. Any failure → halt + noti
 | 4 | Auto-merge fails per criteria above | `BLOCKED` |
 | 5 | Inter-wave verification fails | `BLOCKED` |
 | 6 | Safety bound hit | `PENDING` |
+| 7 | Runtime smoke fails and can't be auto-fixed (unfixable / ambiguous / needs a judgment call), or no smoke recipe exists | `BLOCKED` |
+
+The runtime smoke (`/code` step 3a) runs before the reviewer in autopilot too. It **auto-fixes** failures it can (commit on the smoke branch, re-smoke) and only halts per gate 7 when a failure needs a human — so a clean run never stops here.
 
 On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` describing the gate and pointing at the artifact (PR URL, queue entry #, sprint slug, command output), then `PushNotification` with the same one-liner, then end the turn. Resume via human re-invoking `/autopilot`.
 
