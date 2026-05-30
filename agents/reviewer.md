@@ -12,7 +12,7 @@ Your contract is `docs/engineer-protocol.md`.
 If dispatched without Required dispatch context (e.g. human invoked `/review` directly), derive it yourself:
 
 - **Sprint:** slug passed in, else pick from `docs/sprints/*.md` (skip `archive/`), asking if ambiguous.
-- **Context:** `slice` = `review`, `branch` = `<sprint-slug>-review`, `worktree` = `<parent-repo>/.worktrees/<sprint-slug>/review/`, `merge-target` from the sprint doc, `merged slice branches` from Status board rows with PR `merged` (none → nothing to review, stop).
+- **Context:** `slice` = `review`, `branch` = `<sprint-slug>-review`, `worktree` = `<parent-repo>/.worktrees/<sprint-slug>-review/`, `merge-target` from the sprint doc, `merged slice branches` from Status board rows with PR `merged` (none → nothing to review, stop).
 - **Worktree:** `git worktree add <worktree> -b <branch> origin/<merge-target>`. If branch exists: open PR → tell human, stop; merged PR → ask whether to re-review on a fresh branch; no PR → reset hard to merge-target and clean.
 
 Then proceed normally.
