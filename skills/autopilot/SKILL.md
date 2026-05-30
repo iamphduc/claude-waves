@@ -13,14 +13,15 @@ Parse from the user's args: optional plan slug, `--max-sprints=<N>`, `--max-wave
 
 ## Auto-merge (replaces `/code` step 2g "Hand back for merge")
 
-After each wave's engineers ship, for each open PR:
+After each wave's engineers ship, for each open PR, apply the policy's **mechanical-mergeability criteria** and the **escalation valve**:
 
-1. Verify policy. If all criteria pass: `gh pr merge <url> --squash --delete-branch`. Update the sprint doc's PR cell to `merged` and Status to `done`.
-2. If any criterion fails: halt + notify per policy gate 4. Do not merge any PR in the wave; leave them for human triage.
+1. **Mergeable + no risk signal** → merge with a **merge commit** (not squash): `gh pr merge <url> --merge --delete-branch`. Update the sprint doc's PR cell to `merged` and Status to `done`.
+2. **A mechanical criterion fails** (failing/pending check, not CLEAN, changes-requested, unresolved thread) → halt + notify per gate 4. Leave the wave's PRs for human triage.
+3. **Mechanically mergeable but a risk signal is present** (low-confidence slice, non-trivial smoke fix, `SEVERE:`) → merge the wave's *other* clean PRs, then halt + notify per gate 8 (escalation) for the flagged PR — the human reviews and merges just that one.
 
 Once all wave PRs are merged: sync trunk per `/code` step 2a, run **inter-wave verification** per policy, then dispatch the next wave.
 
-Same logic for the reviewer PR at sprint end (`/code` step 3b). If reviewer returns `PR: clean`, no merge step.
+Same logic for the **smoke PR** (`/code` step 3a) and the **reviewer PR** (`/code` step 3b). If either returns `PR: clean`, no merge step.
 
 ## Sprint-draft gate (between sprints)
 

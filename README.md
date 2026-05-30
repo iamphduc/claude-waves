@@ -53,6 +53,7 @@ All workflow state lives on disk — any agent can be resumed cold from a fresh 
 
 - **Wave merge gate** — expected. Merge PRs in any order, reply `continue`.
 - **Runtime smoke** — the main loop runs the app before review; it auto-fixes bugs it can and only halts if a runtime failure needs your judgment, or if `docs/codebase-structure.md` has no `## Smoke recipe` to bring the app up (fail-closed — add one).
+- **Escalation gate (autopilot)** — a PR is mechanically mergeable but carries a risk signal (low-confidence slice, non-trivial smoke fix, or a `SEVERE:` review finding). Autopilot merged the clean PRs and left this one for you — review and merge it, reply `continue`.
 - **`BLOCKED` in handoff-queue** — read the entry, resolve the underlying issue or update the entry's `Resolution:` line, reply.
 - **Sprint complete** — reply `continue` to chain into the next sprint (or `/sprint` first if no `planned` row remains in the plan).
 - **Engineer PR has failing CI but local tests passed** — no auto-handler. Investigate manually; push a fix to the branch or close the PR and re-dispatch.
@@ -75,7 +76,7 @@ docs/
 
 ## Autonomous flow
 
-`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the workflow unattended across a whole plan: auto-merges PRs, verifies trunk between waves, chains into the next sprint, runs the runtime-smoke gate before each sprint's review, halts + notifies via `PushNotification` at seven gates. Defaults: `--max-sprints` unlimited, `--max-waves=20`, `--max-runtime=4h`.
+`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the workflow unattended across a whole plan: auto-merges clean PRs with a **merge commit** (escalating low-confidence / non-trivial / `SEVERE:` PRs to you), verifies trunk between waves, chains into the next sprint, runs the runtime-smoke gate before each sprint's review, halts + notifies via `PushNotification` at eight gates. Invoking `/autopilot` is your standing consent to the auto-merges. Defaults: `--max-sprints` unlimited, `--max-waves=20`, `--max-runtime=4h`.
 
 Full criteria, gates, and detection rules live in `docs/autonomous-policy.md`. Resume after halt: re-invoke `/autopilot` (same args).
 

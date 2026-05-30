@@ -4,14 +4,22 @@ The `/autopilot` skill (run by the main loop) operates under this policy. Read b
 
 ## Auto-merge criteria
 
-A PR is safe to auto-merge only if **all** hold:
+Invoking `/autopilot` is the user's standing consent to merge PRs that clear the bar below — for the duration of the run, this overrides a general "confirm each merge" preference. (If the user's `CLAUDE.md` hard-forbids unattended merges, add an autopilot carve-out there, or run `/code` for the supervised, merge-it-yourself flow.)
+
+A PR is **mechanically mergeable** only if **all** hold:
 
 - `gh pr checks <url>` reports every required check as `pass` (no `pending`, no `fail`).
 - `gh pr view <url> --json mergeable,mergeStateStatus` returns `mergeable: MERGEABLE` and `mergeStateStatus: CLEAN`.
 - No reviews marked `CHANGES_REQUESTED`.
 - No unresolved review threads.
 
-Merge: `gh pr merge <url> --squash --delete-branch`. Any failure → halt + notify, leave the PR for human triage.
+**Escalation valve.** Even when mechanically mergeable, **withhold the merge and halt for human review (gate 8)** if the PR carries a risk signal — the machine merges what it's confident about and escalates the rest:
+
+- the slice's engineer summary reported `Confidence: low`, or
+- (smoke PR) the smoke gate's fix was **non-trivial** — touched logic, data, or multiple files rather than a localized wiring/config fix, or
+- (reviewer PR) a `SEVERE:` finding was emitted (already gate 3).
+
+Otherwise merge with a **merge commit** (not squash): `gh pr merge <url> --merge --delete-branch`. Update the sprint doc's PR cell to `merged` and Status to `done`. Any merge failure → halt + notify (gate 4), leave the PR for human triage.
 
 ## Halt gates
 
@@ -24,6 +32,7 @@ Merge: `gh pr merge <url> --squash --delete-branch`. Any failure → halt + noti
 | 5 | Inter-wave verification fails | `BLOCKED` |
 | 6 | Safety bound hit | `PENDING` |
 | 7 | Runtime smoke fails and can't be auto-fixed (unfixable / ambiguous / needs a judgment call), or no smoke recipe exists | `BLOCKED` |
+| 8 | Escalation valve — a mechanically-mergeable PR carries a risk signal (low-confidence slice, or non-trivial smoke fix), withheld for human review | `PENDING` |
 
 The runtime smoke (`/code` step 3a) runs before the reviewer in autopilot too. It **auto-fixes** failures it can (commit on the smoke branch, re-smoke) and only halts per gate 7 when a failure needs a human — so a clean run never stops here.
 
