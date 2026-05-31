@@ -4,9 +4,9 @@ _From plan: docs/plans/<plan-slug>.md · Slug: <sprint-slug> · Status: <active 
 
 ## Status board
 
-| Slice | Title | Wave | Difficulty | Agent | Branch | PR | Status | Depends on |
-|-------|-------|------|------------|-------|--------|----|--------|------------|
-| <slice-code> | <one-line> | 1 | 1–5 | engineer-senior \| engineer-junior | <branch-name> | — | pending | — |
+| Wave | Slice | Title | Difficulty | Agent | Branch | PR | Status | Depends on |
+|------|-------|-------|------------|-------|--------|----|--------|------------|
+| 1 | <slice-code> | <one-line> | 1–5 | engineer-senior \| engineer-junior | <branch-name> | — | pending | — |
 
 Wave membership lives in the **Wave** column; slices sharing a wave run in parallel and must own disjoint file sets.
 
@@ -23,13 +23,13 @@ Wave membership lives in the **Wave** column; slices sharing a wave run in paral
 
 ## Field semantics
 
+- **Wave:** the leading column — the parallel batch a slice runs in. Slices sharing a wave run concurrently and **must own disjoint file sets**. Assign waves to **maximize parallel width**: each slice goes in the *earliest* wave where (a) all its `Depends on` slices sit in strictly-earlier waves and (b) its `Files owned` are disjoint from every slice already in that wave. Open a new wave only when a dependency or file conflict forces it — never split independent, non-conflicting slices across waves. **Cap each wave at 5 slices**; eligible overflow spills into the next wave (still respecting deps and disjoint files).
 - **Slug:** matches the row in the main plan's Sprint sequence (`docs/plans/<plan-slug>.md`).
 - **Sprint doc Status:** `active` while in `docs/sprints/`; flipped to `archived` immediately before `mv` to `docs/sprints/archive/`.
 - **Slice Status transitions:** `pending` → `pr open` → `done`, with `blocked` as terminal.
 - **PR values:** `—` / URL / `blocked` / `skipped — verification failed` / `merged`.
 - **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail.
 - **Agent:** derived from Difficulty — **1–2 → `engineer-junior`**, **3–5 → `engineer-senior`**. The board is canonical; per-slice detail never re-states the score or agent.
-- **Wave:** slices sharing a wave run in parallel and **must own disjoint file sets**. If two slices need the same file, push the dependent one to a later wave.
 - **Branch naming:** `<sprint-slug>-<slice-code>` (kebab-case, **flat — no `/`** so a slice branch can't D/F-collide with a `<sprint-slug>`-named integration branch used as the merge-target).
 - **Files owned:** explicit paths, verified to exist; cross-checked for disjointness within the wave.
 
