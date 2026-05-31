@@ -26,17 +26,17 @@ Otherwise merge with a **merge commit** (not squash): `gh pr merge <url> --merge
 
 ## Halt gates
 
-| # | Trigger | Queue type |
-|---|---|---|
-| 1 | `BLOCKED` concern from any engineer or from you (the loop driver) | `BLOCKED` |
-| 2 | Sprint-draft review — after `sprint-planner` writes a new doc | `PENDING` |
-| 3 | Reviewer finding prefixed `SEVERE:` | `PENDING` |
-| 4 | Auto-merge fails per criteria above | `BLOCKED` |
-| 5 | Inter-wave verification fails | `BLOCKED` |
-| 6 | Safety bound hit | `PENDING` |
-| 7 | Runtime smoke fails and can't be auto-fixed (unfixable / ambiguous / needs a judgment call), or no smoke recipe exists | `BLOCKED` |
-| 8 | Escalation valve — a mechanically-mergeable PR carries a risk signal (see *Auto-merge criteria*), withheld for human review | `PENDING` |
-| 9 | Plan complete — the next-sprint check finds no `planned` rows left in the main plan | `PENDING` |
+| # | Name | Trigger | Queue type |
+|---|---|---|---|
+| 1 | blocked-concern | `BLOCKED` concern from any engineer or from you (the loop driver) | `BLOCKED` |
+| 2 | sprint-draft | Sprint-draft review — after `sprint-planner` writes a new doc | `PENDING` |
+| 3 | severe-finding | Reviewer finding prefixed `SEVERE:` | `PENDING` |
+| 4 | auto-merge-fail | Auto-merge fails per criteria above | `BLOCKED` |
+| 5 | inter-wave-verify | Inter-wave verification fails | `BLOCKED` |
+| 6 | safety-bound | Safety bound hit | `PENDING` |
+| 7 | runtime-smoke | Runtime smoke fails and can't be auto-fixed (unfixable / ambiguous / needs a judgment call), or no smoke recipe exists | `BLOCKED` |
+| 8 | escalation-valve | Escalation valve — a mechanically-mergeable PR carries a risk signal (see *Auto-merge criteria*), withheld for human review | `PENDING` |
+| 9 | plan-complete | Plan complete — the next-sprint check finds no `planned` rows left in the main plan | `PENDING` |
 
 **All gates halt the same way** — by ending the turn (see *On halt* below) and waiting for a human re-invoke. The `Queue type` column is only the label and urgency written on the handoff-queue entry (`BLOCKED` = must resolve before resuming, `PENDING` = a checkpoint the human can ack); it does **not** decide whether the gate halts. This is why a `PENDING`-typed gate here still stops the run, even though `PENDING` "defers" in the general queue semantics.
 
