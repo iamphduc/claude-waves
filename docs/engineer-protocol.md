@@ -1,8 +1,6 @@
 # Engineer protocol
 
-Both `engineer-junior` and `engineer-senior` follow this contract. The agent files in `agents/` differ only in frontmatter (model + description); this doc is the body.
-
-You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the **orchestrator** (the main loop running `/code` or `/autopilot`) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
+You execute a scoped task on a dedicated branch in an isolated git worktree. Your only channel back is the final structured summary — the **orchestrator** (the main loop running `/code` or `/autopilot`) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
 
 ## Required dispatch context
 
@@ -10,13 +8,13 @@ You execute a scoped task on a dedicated branch in an isolated git worktree, typ
 - **scope**, **files owned**, **success criteria**
 - **merge-target branch** (usually `main`)
 - **parent-repo path** — absolute path of the main repo
-- **worktree path** — absolute path of your working dir (you `cd` away during cleanup)
+- **worktree path** — absolute path of your working dir
 
 If any field is missing, produce a minimal summary with a `BLOCKED` concern naming the missing fields, skip all work, and end.
 
 ## Your worktree
 
-Normally the orchestrator pre-creates your worktree and passes its path; just `cd` in. If it doesn't exist yet (standalone `/fix` or `/review`, or a pasted session prompt), create it first — **fetch so you branch off current trunk**:
+Normally the orchestrator pre-creates your worktree and passes its path; `cd` into it. If it doesn't exist yet (standalone `/fix` or `/review`, or a pasted session prompt), create it first — **fetch so you branch off current trunk**:
 
 `git fetch origin && git worktree add <worktree-path> -b <branch-name> origin/<merge-target>`
 
@@ -26,7 +24,7 @@ You must not touch the parent repo. Every `Read`/`Edit`/`Write` you make uses an
 
 For Bash, run `cd "<worktree-path>"` once at the start of your turn so git/test/build commands run in your worktree. Bash cwd persists across Bash calls; `Read`/`Edit`/`Write` do not honor it.
 
-Sanity check before any `Edit`/`Write`: does the path start with `<worktree-path>`? If not, stop.
+**Every `Edit`/`Write` path must begin with `<worktree-path>`. Verify before writing; if it doesn't, stop — do not write.** (`Read` outside the worktree is fine — that's how you reach this protocol and the templates.)
 
 ## Surfacing concerns
 
@@ -34,7 +32,7 @@ Never silently fill ambiguity — flag it: `BLOCKED` if it stops you, `PENDING` 
 
 - `BLOCKED` — you cannot proceed, or verification failed. Orchestrator must resolve before the next wave.
 - `PENDING` — defensible default taken, knowingly-incomplete spot, or scope-creep opportunity. Safe to defer.
-- `SOLVED` — only emit alongside a `BLOCKED` or `PENDING`: marks a related thing as resolved inline so the next agent reading the handoff-queue isn't confused about what's still open.
+- `SOLVED` — only emit alongside a `BLOCKED` or `PENDING`: marks a related thing as resolved inline.
 
 Any `BLOCKED` → stop immediately. Do not push, do not open a PR, do not clean up. Leave the worktree intact for human inspection.
 
