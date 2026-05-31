@@ -15,6 +15,6 @@ If dispatched without Required dispatch context (e.g. human invoked `/fix` with 
 - **Paths:** `parent-repo` = cwd; `worktree` = `<parent-repo>/.worktrees/fix-<slug>/`.
 - **Merge-target:** current branch's tracked upstream, else `main`.
 - **Scope/files-owned/success-criteria:** infer from the task description; cap files-owned to what the task plausibly touches.
-- **Worktree:** `git worktree add <worktree> -b fix-<slug> origin/<merge-target>`.
+- **Worktree:** create it per the protocol's "Your worktree" step.
 
 Then proceed normally.

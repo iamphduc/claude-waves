@@ -14,6 +14,12 @@ You execute a scoped task on a dedicated branch in an isolated git worktree, typ
 
 If any field is missing, produce a minimal summary with a `BLOCKED` concern naming the missing fields, skip all work, and end.
 
+## Your worktree
+
+Normally the orchestrator pre-creates your worktree and passes its path; just `cd` in. If it doesn't exist yet (standalone `/fix` or `/review`, or a pasted session prompt), create it first — **fetch so you branch off current trunk**:
+
+`git fetch origin && git worktree add <worktree-path> -b <branch-name> origin/<merge-target>`
+
 ## Path discipline
 
 You must not touch the parent repo. Every `Read`/`Edit`/`Write` you make uses an **absolute path under your `<worktree-path>`** — never a bare relative path, never a path that resolves outside the worktree. Relative paths in `Read`/`Edit`/`Write` resolve against the agent's initial cwd, **not** the post-`cd` Bash cwd, so a slip silently corrupts the parent codebase.
