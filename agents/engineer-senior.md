@@ -13,7 +13,7 @@ If dispatched without Required dispatch context (e.g. human invoked `/fix` with 
 
 - **Slug:** short kebab-case from the task. `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`.
 - **Paths:** `parent-repo` = cwd; `worktree` = `<parent-repo>/.worktrees/fix-<slug>/`.
-- **Merge-target:** current branch's tracked upstream, default `main`. Ask if ambiguous.
+- **Merge-target:** current branch's tracked upstream, else `main`.
 - **Scope/files-owned/success-criteria:** infer from the task description; cap files-owned to what the task plausibly touches.
 - **Worktree:** `git worktree add <worktree> -b fix-<slug> origin/<merge-target>`.
 

@@ -9,14 +9,14 @@ Work in thinking mode. Draft the next `planned` sprint from `docs/plans/<plan-sl
 
 ## Inputs
 
-1. **The main plan.** Read `docs/plans/<plan-slug>.md`; if not specified, list `docs/plans/*.md` (skip `Status: archived`) and ask which. If the folder is empty or no `planned` row remains, tell the human and stop.
+1. **The main plan.** Read `docs/plans/<plan-slug>.md`. If not specified: use the sole non-archived plan; if several exist, list them and stop, telling the human to re-run `/sprint <slug>`. If the folder is empty or no `planned` row remains, tell the human and stop.
 
 2. **Grounding.** Read whichever exist:
    - `docs/codebase-structure.md` — codebase brief
    - `docs/decisions.md` — authoritative
    - `docs/known-issues/*.md` — durable constraints
    - `docs/handoff-queue.md` — unresolved `PENDING` entries may belong in this sprint; pending `BLOCKED` entries must be resolved first — stop and tell the human
-   - Existing `docs/sprints/<sprint-slug>.md` — if a draft already exists, ask the human: update or discard?
+   - Existing `docs/sprints/<sprint-slug>.md` — if a draft already exists, stop and surface it rather than overwriting; the human deletes it to regenerate, or edits it in place.
 
 ## Output
 
