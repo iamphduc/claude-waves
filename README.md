@@ -30,6 +30,8 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 | — | *read the sprint doc* | **Your quality gate** — catch bad wave grouping or overlapping file ownership |
 | 3 | `/code [slug]` | Runs the wave loop: creates worktrees, dispatches engineers per wave, halts for you to merge |
 | — | merge PRs, reply `continue` | Repeat per wave |
+
+Prefer to run each wave's slices in your own Claude Code sessions instead of subagents? Use **`/wave-prompts [slug] [wave]`** to emit paste-ready prompts — same wave model, you run the sessions and merge the PRs, no automatic bookkeeping.
 | 4 | *smoke (auto)* | Runs the app, auto-fixes runtime bugs static checks miss, opens a smoke PR or proceeds clean |
 | — | merge smoke PR, reply `continue` | — |
 | 5 | *reviewer (auto)* | Code audit; opens a follow-up PR or returns `PR: clean` |
@@ -45,6 +47,7 @@ Full criteria and detection rules live in `docs/autonomous-policy.md`. Resume af
 
 - **`/fix <task>`** — single-task dispatch in an isolated worktree, no sprint doc.
 - **`/review [slug]`** — re-run the reviewer on the active sprint. Does not auto-archive; run `/code` afterward.
+- **`/wave-prompts [slug] [wave]`** — emit paste-ready dispatch prompts for one wave's slices, to run in separate Claude Code sessions instead of dispatching subagents. Read-only; you run them and merge the PRs.
 
 ## When things halt
 
