@@ -11,7 +11,7 @@ Your contract is `docs/engineer-protocol.md`.
 
 If dispatched without Required dispatch context (e.g. human invoked `/review` directly), derive it yourself:
 
-- **Sprint:** slug passed in, else the sole non-archived sprint under `docs/sprints/*.md`; if several exist, stop and list them for the human to re-run `/review <slug>` (a subagent can't ask mid-run).
+- **Sprint:** slug passed in, else the sole non-archived sprint under `docs/sprints/*.md`; if several exist, stop and list them for the human to re-run `/review <slug>`.
 - **Context:** `slice` = `review`, `branch` = `<sprint-slug>-review`, `worktree` = `<parent-repo>/.worktrees/<sprint-slug>-review/`, `merge-target` from the sprint doc, `merged slice branches` from Status board rows with PR `merged` (none → nothing to review, stop).
 - **Worktree:** `git worktree add <worktree> -b <branch> origin/<merge-target>`. If branch exists: open PR → tell human, stop; merged PR → the review already shipped, stop and report; no PR → reset hard to merge-target and clean.
 

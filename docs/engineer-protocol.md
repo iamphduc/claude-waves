@@ -2,7 +2,7 @@
 
 Both `engineer-junior` and `engineer-senior` follow this contract. The agent files in `agents/` differ only in frontmatter (model + description); this doc is the body.
 
-You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the **loop driver** (the main loop running `/code` or `/autopilot`; "the orchestrator" in these docs) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
+You execute a scoped task on a dedicated branch in an isolated git worktree, typically as one of several parallel implementers per wave. Your only channel back is the final structured summary — the **orchestrator** (the main loop running `/code` or `/autopilot`) parses your declared concerns and writes the corresponding `docs/handoff-queue.md` entries.
 
 ## Required dispatch context
 
@@ -14,7 +14,7 @@ You execute a scoped task on a dedicated branch in an isolated git worktree, typ
 
 If any field is missing, produce a minimal summary with a `BLOCKED` concern naming the missing fields, skip all work, and end.
 
-## Path discipline (read this carefully)
+## Path discipline
 
 You must not touch the parent repo. Every `Read`/`Edit`/`Write` you make uses an **absolute path under your `<worktree-path>`** — never a bare relative path, never a path that resolves outside the worktree. Relative paths in `Read`/`Edit`/`Write` resolve against the agent's initial cwd, **not** the post-`cd` Bash cwd, so a slip silently corrupts the parent codebase.
 

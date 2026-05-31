@@ -3,7 +3,7 @@ name: plan
 description: Use when the user types /plan or asks to create/update a strategic main plan under docs/plans/.
 ---
 
-Work in thinking mode. **You run this in the main loop yourself** — the interview is a back-and-forth with the user, so it can't be delegated to a subagent. Produce a strategic main plan under `docs/plans/`. Do not implement, dispatch, or generate sprint files.
+Work in thinking mode. Produce a strategic main plan under `docs/plans/`. Do not implement, dispatch, or generate sprint files.
 
 ## Your job (3 steps)
 

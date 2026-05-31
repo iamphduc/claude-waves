@@ -9,7 +9,7 @@ Work in thinking mode. Draft the next `planned` sprint from `docs/plans/<plan-sl
 
 ## Inputs
 
-1. **The main plan.** Read `docs/plans/<plan-slug>.md`. If not specified: use the sole non-archived plan; if several exist, list them and stop, telling the human to re-run `/sprint <slug>` (a subagent can't ask mid-run). If the folder is empty or no `planned` row remains, tell the human and stop.
+1. **The main plan.** Read `docs/plans/<plan-slug>.md`. If not specified: use the sole non-archived plan; if several exist, list them and stop, telling the human to re-run `/sprint <slug>`. If the folder is empty or no `planned` row remains, tell the human and stop.
 
 2. **Grounding.** Read whichever exist:
    - `docs/codebase-structure.md` — codebase brief
