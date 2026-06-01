@@ -35,8 +35,11 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    - scope:            <from per-slice detail>
    - files owned:      <paths>
    - success criteria: <criteria>
+   - teardown:         defer
 
-   Create your worktree per the protocol, then proceed (ship a PR, clean up).
+   Create your worktree per the protocol, then ship a PR. Leave the worktree
+   intact (teardown: defer) so this session can apply follow-up fixes to the
+   same branch/PR; it gets removed after the PR is merged.
    ```
 
    `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column.

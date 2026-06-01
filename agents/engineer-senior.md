@@ -15,6 +15,7 @@ If dispatched without Required dispatch context (e.g. human invoked `/fix` with 
 - **Paths:** `parent-repo` = cwd; `worktree` = `<parent-repo>/.claude/worktrees/fix-<slug>/`.
 - **Merge-target:** current branch's tracked upstream, else `main`.
 - **Scope/files-owned/success-criteria:** infer from the task description; cap files-owned to what the task plausibly touches.
-- **Worktree:** create it per the protocol's "Your worktree" step.
+- **Teardown:** `defer` — `/fix` is manual and iterative; leave the worktree intact after the PR so follow-up fixes reuse it. The `/fix` main loop removes it post-merge.
+- **Worktree:** if the dispatch context already names an existing worktree path (a follow-up fix), `cd` into it and reuse it; otherwise create it per the protocol's "Your worktree" step.
 
 Then proceed normally.

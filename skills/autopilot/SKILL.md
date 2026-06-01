@@ -7,6 +7,10 @@ description: Use when the user types /autopilot or asks to run the workflow auto
 
 Run the **`/code` wave loop** (`.claude/skills/code/SKILL.md`) with the deltas below, under `docs/autonomous-policy.md` — read it at the start of every turn. Args: optional plan slug plus the policy's `--max-*` bounds.
 
+## Teardown
+
+Override the `/code` dispatch convention: dispatch engineers with `teardown: immediate`, not `defer`. There's no human iterating on the worktree here, so engineers tear down at ship time as usual; you don't do the post-merge worktree removal that `/code`'s confirm-on-resume does.
+
 ## Auto-merge
 
 Don't hand back the wave, smoke, or reviewer PRs. For each, apply the policy's auto-merge criteria + escalation valve: merge the clean ones; a failed criterion or risk-flagged PR halts (merge the wave's others first).

@@ -11,9 +11,9 @@ State on disk, re-read every resume: `docs/sprints/<sprint-slug>.md` (status boa
 
 ## Conventions
 
-- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each engineer its dispatch context per `docs/engineer-protocol.md`.
+- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each engineer its dispatch context per `docs/engineer-protocol.md`, with `teardown: defer` (worktrees stay up through merge so you can iterate; you remove them post-merge).
 - **Hand back for merge:** end the turn listing each open PR as `- <label>: <PR URL>` under a one-line header plus a "reply `continue`" line. Don't poll, auto-merge, or proceed.
-- **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` each PR you handed back; any unmerged → re-end the turn. Once all are merged, sync trunk (`git checkout <merge-target> && git pull origin <merge-target>`) and set the PR/Status cells to `merged`/`done`.
+- **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` each PR you handed back; any unmerged → re-end the turn. Once all are merged, sync trunk (`git checkout <merge-target> && git pull origin <merge-target>`), set the PR/Status cells to `merged`/`done`, and tear down each merged slice's deferred worktree: `git worktree remove <worktree-path>` → `git branch -d <branch-name>` (no `--force`/`-D`; on failure leave it and note it).
 - **Reset a worktree:** `git reset --hard origin/<merge-target> && git clean -fd`, then re-run skipping pre-create.
 - **Gate-worktree resume** (smoke, reviewer): if the branch exists, find its PR — open → re-end the turn pointing at it; merged → confirm-on-resume, then skip ahead; none → reset the worktree and re-run.
 
