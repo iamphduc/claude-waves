@@ -31,7 +31,7 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    - branch:           <slug>-<code>
    - merge-target:     <merge-target>
    - parent-repo:      <absolute project root>
-   - worktree:         <parent>/.worktrees/<slug>-<code>/
+   - worktree:         <parent>/.claude/worktrees/<slug>-<code>/
    - scope:            <from per-slice detail>
    - files owned:      <paths>
    - success criteria: <criteria>
