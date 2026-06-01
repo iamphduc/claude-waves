@@ -3,7 +3,7 @@ name: wave-prompts
 description: Use when the user types /wave-prompts or asks to emit per-wave dispatch prompts to run engineers in separate Claude Code sessions (session fan-out instead of subagent dispatch).
 ---
 
-Read-only and one-shot: read the sprint doc and emit one paste-ready dispatch prompt per slice in the requested wave, then stop. Do **not** dispatch subagents, create worktrees, write the status board / handoff-queue, or merge PRs — the engineers and the human do that. This is the session-fan-out alternative to `/code`'s subagent fan-out.
+Read-only and one-shot: read the sprint doc and emit one paste-ready dispatch prompt per slice in the requested wave, then stop. Do **not** dispatch subagents, create worktrees, write the status board / handoff-queue, or merge PRs — the engineers and the human do that.
 
 Parse from args: the sprint slug (if any), the wave number (default `1`), and `--merge-target=<branch>` (default `main`). If no slug is given, use the sole non-archived `docs/sprints/*.md`; if several exist, list them and stop; if none exist, tell the human to run `/sprint` and stop.
 
@@ -14,13 +14,13 @@ Parse from args: the sprint slug (if any), the wave number (default `1`), and `-
 
 ## Preflight (read-only)
 
-Check `origin` exists (`git remote get-url origin`) and the merge-target is on origin (`git ls-remote --heads origin <merge-target>`). On failure, print a warning banner atop your output — do not halt; you only emit text.
+Check `origin` exists (`git remote get-url origin`) and the merge-target is on origin (`git ls-remote --heads origin <merge-target>`). On failure, print a warning banner atop your output — do not halt.
 
 ## Emit
 
 Select the requested wave's slices (grouped by the **Wave** column). If that wave has no slices, say so and stop. Otherwise:
 
-1. Print a header: the wave number, the slices in it, and the reminder — *launch one session per block **at the project root**, paste it, merge the PRs when green, then re-run `/wave-prompts <slug> <next-wave>`.*
+1. Print a header: the wave number; the slices in it, each tagged with its `Agent` tier + difficulty from the status board; and the reminder — *launch one session per block **at the project root**, paste it, merge the PRs when green, then re-run `/wave-prompts <slug> <next-wave>`.*
 2. Print one fenced block per slice, filled from the sprint doc (if a slice lacks scope, files owned, or success criteria, flag it in the header instead of emitting a blank field):
 
    ```
@@ -39,6 +39,6 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    Create your worktree per the protocol, then proceed (ship a PR, clean up).
    ```
 
-   `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column; `worktree` is `<parent>/.worktrees/<slug>-<code>/`.
+   `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column.
 
 Then end your turn — there is no state to resume.
