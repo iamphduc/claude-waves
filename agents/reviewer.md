@@ -13,7 +13,7 @@ If dispatched without Required dispatch context (e.g. human invoked `/review` di
 
 - **Sprint:** slug passed in, else the sole non-archived sprint under `docs/sprints/*.md`; if several exist, stop and list them for the human to re-run `/review <slug>`.
 - **Context:** `slice` = `review`, `branch` = `<sprint-slug>-review`, `worktree` = `<parent-repo>/.worktrees/<sprint-slug>-review/`, `merge-target` from the sprint doc, `merged slice branches` from Status board rows with PR `merged` (none → nothing to review, stop).
-- **Worktree:** `git worktree add <worktree> -b <branch> origin/<merge-target>`. If branch exists: open PR → tell human, stop; merged PR → the review already shipped, stop and report; no PR → reset hard to merge-target and clean.
+- **Worktree:** create it per the protocol's "Your worktree" step. If branch exists: open PR → tell human, stop; merged PR → the review already shipped, stop and report; no PR → reset hard to merge-target and clean.
 
 Then proceed normally.
 
