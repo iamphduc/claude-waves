@@ -34,7 +34,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 **Resume a halted wave:** re-dispatch each `blocked` slice fresh (the human resolved the cause, not the worktree) — reset its worktree if it exists (per convention) else recreate it (step 2); dispatch (step 3) with any still-`pending` slice. Skip `merged`/`done`.
 
 1. **Sync** (skip on the first wave of the first sprint): confirm-on-resume the prior wave's `pr open` slices.
-2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<merge-target>` — branch names from the sprint doc's Branch column.
+2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.claude/worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<merge-target>` — branch names from the sprint doc's Branch column.
 3. **Dispatch** per the Dispatch convention, subagent_type `engineer-junior`/`engineer-senior` per the sprint doc.
 4. **Translate concerns:** append each engineer's `Concerns` lines (`[TYPE] body`) to `docs/handoff-queue.md` per its template (`from: engineer-<tier>`).
 5. **Update the status board:** set each slice's PR and Status per `docs/templates/sprint.md`.
@@ -44,11 +44,11 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 ### Sprint complete (all waves `done`)
 
 **Runtime smoke (hard gate).** Smoke the runtime yourself post-merge; resume via gate-worktree on `<sprint-slug>-smoke` (merged → skip to the reviewer).
-- **Set up & verify:** per the `## Smoke recipe` in `docs/codebase-structure.md` (halt if absent), pre-create `.worktrees/<sprint-slug>-smoke/` off `origin/<merge-target>` and bring the app up — fixes land here, never trunk. Drive it against each summary's `Runtime to smoke`, checking the real page/DOM/response.
+- **Set up & verify:** per the `## Smoke recipe` in `docs/codebase-structure.md` (halt if absent), pre-create `.claude/worktrees/<sprint-slug>-smoke/` off `origin/<merge-target>` and bring the app up — fixes land here, never trunk. Drive it against each summary's `Runtime to smoke`, checking the real page/DOM/response.
 - **Fix & ship:** auto-fix and re-smoke until green, halting with a diagnosis when it needs judgment. Log fixes/findings to `docs/handoff-queue.md`, record a smoke summary, stop your servers. No fixes → skip to the reviewer, else open a PR and hand back per convention (`Sprint <sprint-slug> smoke awaiting merge`).
 
 **Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
-- **Dispatch:** pre-create `.worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.
+- **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.
 - **Triage & ship:** translate `PENDING`/`SOLVED` concerns, routing a `SEVERE:` `PENDING` to the hand-back, else into the Archive gate's end-of-turn message. `PR: clean` → skip to archive, else open a PR and hand back per convention (`Sprint <sprint-slug> review awaiting merge`).
 
 **Archive & advance.** Append the Sprint summary (per `docs/templates/sprint.md`), flip the doc `Status:` to `archived`, and `mv` it to `docs/sprints/archive/`.
