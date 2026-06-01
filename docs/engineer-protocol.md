@@ -9,8 +9,9 @@ You execute a scoped task on a dedicated branch in an isolated git worktree. You
 - **merge-target branch** (usually `main`)
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
+- **teardown** *(optional)* — `defer` (leave the worktree intact after the PR; the orchestrator removes it post-merge) or `immediate` (remove it yourself at ship). Defaults to `immediate` when absent.
 
-If any field is missing, produce a minimal summary with a `BLOCKED` concern naming the missing fields, skip all work, and end.
+If any required field above is missing, produce a minimal summary with a `BLOCKED` concern naming the missing fields, skip all work, and end. (`teardown` is optional — never `BLOCKED` on it.)
 
 ## Your worktree
 
@@ -40,7 +41,7 @@ Any `BLOCKED` → stop immediately. Do not push, do not open a PR, do not clean 
 
 1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note in the summary's Static checks field and cap Confidence at `medium`. These are **static only** — you cannot start the app or drive a browser in your sandbox, so **do not claim runtime or visual behavior works** (green static checks routinely hide runtime regressions). Instead, list every runtime-observable behavior your slice introduces (a page renders, a route hard-loads, a control works, a font/style applies) in the summary's `Runtime to smoke` field; the main-loop smoke gate verifies them after merge.
 2. **Commit, push, open the PR** against the merge-target. Prefix the commit message and PR title with the slice code.
-3. **Clean up:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On any failure, surface `PENDING`, set Cleanup to `partial`, and stop the rest of cleanup.
+3. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On any failure, surface `PENDING`, set Cleanup to `partial`, and stop the rest of cleanup. When `teardown` is `defer`, skip removal entirely: leave the worktree and branch intact for follow-up work and post-merge teardown by the orchestrator, and set Cleanup to `deferred — worktree <worktree-path> retained`.
 
 Never use `--force` or `-D` — if something blocks, let a human investigate.
 
