@@ -13,14 +13,14 @@ Override the `/code` dispatch convention: dispatch engineers with `teardown: imm
 
 ## Auto-merge
 
-Don't hand back the wave, smoke, or reviewer PRs. For each, apply the policy's auto-merge criteria + escalation valve: merge the clean ones; a failed criterion or risk-flagged PR halts (merge the wave's others first).
+Don't hand back the wave or reviewer PRs. For each, apply the policy's auto-merge criteria + escalation valve: merge the clean ones; a failed criterion or risk-flagged PR halts (merge the wave's others first).
 
 ## Sprint-draft gate (between sprints)
 
 Don't end with "reply continue" — run one sprint per turn:
 
 1. `--max-sprints` reached → halt at the safety-bound gate (policy gate 6).
-2. No `planned` row left in the plan → halt at the plan-complete gate (policy gate 9).
+2. No `planned` row left in the plan → halt at the plan-complete gate (policy gate 8).
 3. Else dispatch the `sprint-planner`, then halt at the sprint-draft gate (policy gate 2).
 
 ## Safety counters

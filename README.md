@@ -18,7 +18,7 @@ Copy these folders into your project (new or existing repo):
 
 Everything the workflow needs ships in those folders, scaffolding included. Then fill two stubs for your project:
 
-- `docs/codebase-structure.md` — your codebase brief; the **`## Smoke recipe`** section is required (the runtime-smoke gate is fail-closed and halts until it's filled).
+- `docs/codebase-structure.md` — your codebase brief; the **`## Smoke recipe`** section is required (engineers use it to bring the app up and browser-verify each slice before shipping).
 - `docs/decisions.md` — architectural decisions, as you make them.
 
 ## Manual flow
@@ -32,9 +32,7 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 | — | merge PRs, reply `continue` | Repeat per wave |
 
 Prefer to run each wave's slices in your own Claude Code sessions instead of subagents? Use **`/wave-prompts [slug] [wave]`** to emit paste-ready prompts — same wave model, you run the sessions and merge the PRs, no automatic bookkeeping.
-| 4 | *smoke (auto)* | Runs the app, auto-fixes runtime bugs static checks miss, opens a smoke PR or proceeds clean |
-| — | merge smoke PR, reply `continue` | — |
-| 5 | *reviewer (auto)* | Code audit; opens a follow-up PR or returns `PR: clean` |
+| 4 | *reviewer (auto)* | Code audit; opens a follow-up PR or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives; `continue` chains into the next sprint |
 
 ## Autonomous flow
@@ -53,7 +51,6 @@ Full criteria and detection rules live in `docs/autonomous-policy.md`. Resume af
 
 - **Preflight** — halts before wave 1 if there's no `origin`, the merge-target isn't pushed, or a sprint prerequisite isn't on the merge-target. Fix, re-run.
 - **Wave merge gate** — expected. Merge PRs, reply `continue`.
-- **Runtime smoke** — auto-fixes what it can; halts only on a runtime failure needing your judgment, or if `docs/codebase-structure.md` has no `## Smoke recipe` (add one).
 - **Escalation gate (autopilot)** — a mergeable PR carries a risk signal. Review, merge, reply `continue`.
 - **`BLOCKED` in handoff-queue** — resolve the issue or update the entry's `Resolution:` line, reply.
 
