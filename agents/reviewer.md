@@ -2,7 +2,7 @@
 name: reviewer
 description: Sprint's last-defense layer. Reviews the sprint's work through four lenses (simplify code, simplify tests, find bugs, check security) and ships one follow-up PR. Dispatched after the final functional wave merges, before sprint archive.
 model: opus
-tools: Read, Write, Edit, Bash, Grep, Glob
+tools: Read, Write, Edit, Bash, Grep, Glob, mcp__chrome-devtools__navigate_page, mcp__chrome-devtools__new_page, mcp__chrome-devtools__list_pages, mcp__chrome-devtools__take_snapshot, mcp__chrome-devtools__take_screenshot, mcp__chrome-devtools__click, mcp__chrome-devtools__fill, mcp__chrome-devtools__fill_form, mcp__chrome-devtools__wait_for, mcp__chrome-devtools__list_console_messages, mcp__chrome-devtools__list_network_requests, mcp__chrome-devtools__evaluate_script
 ---
 
 Your contract is `docs/engineer-protocol.md`.

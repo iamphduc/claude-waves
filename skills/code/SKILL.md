@@ -15,7 +15,7 @@ State on disk, re-read every resume: `docs/sprints/<sprint-slug>.md` (status boa
 - **Hand back for merge:** end the turn listing each open PR as `- <label>: <PR URL>` under a one-line header plus a "reply `continue`" line. Don't poll, auto-merge, or proceed.
 - **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` each PR you handed back; any unmerged → re-end the turn. Once all are merged, sync trunk (`git checkout <merge-target> && git pull origin <merge-target>`), set the PR/Status cells to `merged`/`done`, and tear down each merged slice's deferred worktree: `git worktree remove <worktree-path>` → `git branch -d <branch-name>` (no `--force`/`-D`; on failure leave it and note it).
 - **Reset a worktree:** `git reset --hard origin/<merge-target> && git clean -fd`, then re-run skipping pre-create.
-- **Gate-worktree resume** (smoke, reviewer): if the branch exists, find its PR — open → re-end the turn pointing at it; merged → confirm-on-resume, then skip ahead; none → reset the worktree and re-run.
+- **Gate-worktree resume** (reviewer): if the branch exists, find its PR — open → re-end the turn pointing at it; merged → confirm-on-resume, then skip ahead; none → reset the worktree and re-run.
 
 ## Preflight (once, before the first wave; skip on resume mid-sprint)
 
@@ -43,9 +43,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 ### Sprint complete (all waves `done`)
 
-**Runtime smoke (hard gate).** Smoke the runtime yourself post-merge; resume via gate-worktree on `<sprint-slug>-smoke` (merged → skip to the reviewer).
-- **Set up & verify:** per the `## Smoke recipe` in `docs/codebase-structure.md` (halt if absent), pre-create `.claude/worktrees/<sprint-slug>-smoke/` off `origin/<merge-target>` and bring the app up — fixes land here, never trunk. Drive it against each summary's `Runtime to smoke`, checking the real page/DOM/response.
-- **Fix & ship:** auto-fix and re-smoke until green, halting with a diagnosis when it needs judgment. Log fixes/findings to `docs/handoff-queue.md`, record a smoke summary, stop your servers. No fixes → skip to the reviewer, else open a PR and hand back per convention (`Sprint <sprint-slug> smoke awaiting merge`).
+Engineers verify their own slice's runtime in the browser before shipping (per `docs/engineer-protocol.md`), so there's no separate post-merge smoke gate — go straight to the reviewer.
 
 **Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
 - **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.

@@ -37,8 +37,7 @@ Wave membership lives in the **Wave** column; slices sharing a wave run in paral
 
 Appended by the orchestrator after the last wave completes, immediately before archive.
 
-- **Slices shipped:** <slice-code list>
-- **Runtime smoke:** <PR URL | clean> · bugs found+fixed: <N> (runtime regressions static checks missed) · deferred: <M>
+- **Slices shipped:** <slice-code list> (each engineer browser-verified its own runtime per `docs/engineer-protocol.md`)
 - **Reviewer:** <PR URL | clean> · severe findings: <N> (count of `SEVERE:` PENDING entries emitted)
 - **Queue entries:** resolved <N>, deferred <M> — link the deferred ones inline
 - **Approximate token cost:** <number or rough range>
