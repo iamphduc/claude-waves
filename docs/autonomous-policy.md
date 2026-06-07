@@ -11,23 +11,23 @@ A PR is **mechanically mergeable** only if **all** hold:
 - No reviews marked `CHANGES_REQUESTED`.
 - No unresolved review threads — `gh api graphql -f query='{repository(owner:"<owner>",name:"<repo>"){pullRequest(number:<n>){reviewThreads(first:100){nodes{isResolved}}}}}'` returns no node with `isResolved: false`.
 
-**Precondition.** Merge-target branch protection must **not** require a human approving review (else `mergeStateStatus` stays `BLOCKED` → gate 3).
+**Precondition.** Merge-target branch protection must **not** require a human approving review (else `mergeStateStatus` stays `BLOCKED` → the auto-merge-fail gate).
 
-**Escalation valve.** **Withhold the merge and halt (gate 6)** if the slice's engineer summary reported `Confidence: low`.
+**Escalation valve.** **Withhold the merge and halt (escalation-valve gate)** if the slice's engineer summary reported `Confidence: low`.
 
-Otherwise merge (merge commit, not squash): `gh pr merge <url> --merge --delete-branch`, then set the sprint doc's PR cell to `merged` and Status to `done`. Any failure → halt + notify (gate 3).
+Otherwise merge (merge commit, not squash): `gh pr merge <url> --merge --delete-branch`, then set the sprint doc's PR cell to `merged` and Status to `done`. Any failure → halt + notify (auto-merge-fail gate).
 
 ## Halt gates
 
-| # | Name | Trigger | Queue type |
-|---|---|---|---|
-| 1 | blocked-concern | `BLOCKED` concern from any engineer or from you | `BLOCKED` |
-| 2 | severe-finding | Reviewer finding prefixed `SEVERE:` | `PENDING` |
-| 3 | auto-merge-fail | Auto-merge fails per criteria above | `BLOCKED` |
-| 4 | inter-wave-verify | Inter-wave verification fails | `BLOCKED` |
-| 5 | safety-bound | Safety bound hit | `PENDING` |
-| 6 | escalation-valve | A mechanically-mergeable PR carries a risk signal; withheld for human review | `PENDING` |
-| 7 | plan-complete | Plan complete — the next-sprint check finds no `planned` rows left in the main plan | `PENDING` |
+| Gate | Trigger | Queue type |
+|---|---|---|
+| blocked-concern | `BLOCKED` concern from any engineer or from you | `BLOCKED` |
+| severe-finding | Reviewer finding prefixed `SEVERE:` | `PENDING` |
+| auto-merge-fail | Auto-merge fails per criteria above | `BLOCKED` |
+| inter-wave-verify | Inter-wave verification fails | `BLOCKED` |
+| safety-bound | Safety bound hit | `PENDING` |
+| escalation-valve | A mechanically-mergeable PR carries a risk signal; withheld for human review | `PENDING` |
+| plan-complete | Plan complete — the next-sprint check finds no `planned` rows left in the main plan | `PENDING` |
 
 **Every gate halts — end the turn.** `Queue type` only labels the queue entry (`BLOCKED` = resolve before resuming; `PENDING` = human can ack); both halt the run.
 
@@ -35,11 +35,11 @@ On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` nam
 
 ## Inter-wave verification
 
-After trunk sync, before the next wave: run the project's verification command in the parent repo — the `Verification:` line in `docs/codebase-structure.md`, else detect it from repo files. Non-zero exit → halt + notify (gate 4).
+After trunk sync, before the next wave: run the project's verification command in the parent repo — the `Verification:` line in `docs/codebase-structure.md`, else detect it from repo files. Non-zero exit → halt + notify (inter-wave-verify gate).
 
 ## Safety bounds
 
-Three caps from `/autopilot` args; hitting any → halt at gate 5:
+Three caps from `/autopilot` args; hitting any → halt at the safety-bound gate:
 
 - `--max-sprints=<N>` — sprints completed. Default: unlimited (until no `planned` rows).
 - `--max-waves=<N>` — total waves dispatched. Default: `20`.
