@@ -3,9 +3,9 @@ name: code
 description: Use when the user types /code or asks to execute a sprint via the wave loop — dispatch engineers per wave, hand back to the human to merge each wave's PRs, then review and archive.
 ---
 
-Work in thinking mode. You run this wave loop in the main loop yourself — dispatch engineers and the reviewer via `Agent`.
+Work in thinking mode. Run this wave loop in the main loop; dispatch engineers and the reviewer via `Agent`.
 
-Parse from args: the plan slug (if any) and `--merge-target=<branch>` (the run's trunk; default `main`). If no plan is given, list `docs/plans/*.md` (excluding `Status: archived`) and ask which to run.
+Parse from args: the plan slug (if any) and `--merge-target=<branch>` (default `main`). If no plan is given, list `docs/plans/*.md` (excluding `Status: archived`) and ask which to run.
 
 State on disk, re-read every resume: `docs/sprints/<sprint-slug>.md` (status board), `docs/handoff-queue.md` (concerns), `docs/plans/<plan-slug>.md` (master plan).
 
@@ -43,7 +43,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 ### Sprint complete (all waves `done`)
 
-Engineers browser-verify their own runtime before shipping (per `docs/engineer-protocol.md`) — no separate smoke gate; go straight to the reviewer.
+Go straight to the reviewer — no post-merge smoke gate.
 
 **Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
 - **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.

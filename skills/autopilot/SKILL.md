@@ -3,11 +3,11 @@ name: autopilot
 description: Use when the user types /autopilot or asks to run the workflow autonomously across a plan. Also the resume command after a halt.
 ---
 
-**Run the `/code` wave loop yourself** (`.claude/skills/code/SKILL.md`) with the deltas below, under `docs/autonomous-policy.md` — read it every turn. Beyond `/code`, also dispatch the `sprint-planner` and notify on halt. Args: optional plan slug plus the policy's `--max-*` bounds.
+**Run the `/code` wave loop** (`.claude/skills/code/SKILL.md`) with the deltas below, under `docs/autonomous-policy.md` — read it every turn. Beyond `/code`, also dispatch the `sprint-planner` and notify on halt. Args: optional plan slug plus the policy's `--max-*` bounds.
 
 ## Teardown
 
-Dispatch engineers with `teardown: immediate` (not `/code`'s `defer`): engineers tear down at ship time, and you skip `/code`'s post-merge worktree removal.
+Dispatch engineers with `teardown: immediate` (not `/code`'s `defer`); skip `/code`'s post-merge worktree removal.
 
 ## Auto-merge
 

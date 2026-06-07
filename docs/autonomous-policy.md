@@ -2,7 +2,7 @@
 
 ## Auto-merge criteria
 
-Invoking `/autopilot` is standing consent to merge any PR clearing the bar below. (If `CLAUDE.md` forbids unattended merges, add an autopilot carve-out or use `/code`.)
+Merge any PR that clears the bar below — `/autopilot` is standing consent for the run. (If `CLAUDE.md` forbids unattended merges, add an autopilot carve-out or use `/code`.)
 
 A PR is **mechanically mergeable** only if **all** hold:
 
@@ -11,7 +11,7 @@ A PR is **mechanically mergeable** only if **all** hold:
 - No reviews marked `CHANGES_REQUESTED`.
 - No unresolved review threads — `gh api graphql -f query='{repository(owner:"<owner>",name:"<repo>"){pullRequest(number:<n>){reviewThreads(first:100){nodes{isResolved}}}}}'` returns no node with `isResolved: false`.
 
-**Precondition.** Merge-target branch protection must **not** require a human approving review — if it does, `mergeStateStatus` stays `BLOCKED` and every PR halts at gate 3.
+**Precondition.** Merge-target branch protection must **not** require a human approving review (else `mergeStateStatus` stays `BLOCKED` → gate 3).
 
 **Escalation valve.** **Withhold the merge and halt (gate 6)** if the slice's engineer summary reported `Confidence: low`.
 
@@ -29,9 +29,9 @@ Otherwise merge (merge commit, not squash): `gh pr merge <url> --merge --delete-
 | 6 | escalation-valve | A mechanically-mergeable PR carries a risk signal; withheld for human review | `PENDING` |
 | 7 | plan-complete | Plan complete — the next-sprint check finds no `planned` rows left in the main plan | `PENDING` |
 
-**All gates halt the same way** — end the turn. `Queue type` only labels the queue entry (`BLOCKED` = resolve before resuming; `PENDING` = human can ack); it doesn't affect halting — `PENDING` gates stop the run too.
+**Every gate halts — end the turn.** `Queue type` only labels the queue entry (`BLOCKED` = resolve before resuming; `PENDING` = human can ack); both halt the run.
 
-On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` naming the gate and artifact, `PushNotification`, then end the turn. Human resumes by re-invoking `/autopilot`.
+On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` naming the gate and artifact, `PushNotification`, then end the turn.
 
 ## Inter-wave verification
 

@@ -1,12 +1,12 @@
 # Handoff Queue
 
-Inter-agent communication. **The human is the ultimate arbiter** — `BLOCKED` entries halt the orchestrator until acknowledged. **One line per entry** — never break an entry across multiple lines.
+**The human is the ultimate arbiter** — `BLOCKED` entries halt the orchestrator until acknowledged. **One line per entry.**
 
 Format: `` - `[YYYY-MM-DD · TYPE · from → to · sprint: <slug> · slice: <code>]` <body> **Resolution:** pending `` (or `**Resolution:** <YYYY-MM-DD> — <what changed> [optional link to docs/decisions.md#anchor]`).
 
-Entries are **date-keyed and append-only** (newest at the tail) — reference one by its `[date · from → to]` header plus a few words of its body, never by position (a same-day header can repeat; the body disambiguates). Glance at the tail to judge whether prune is due (>100 entries). `from` / `to` may be any of `engineer-junior` / `engineer-senior` / `orchestrator` / `sprint-planner` / `planner` / `human` — anyone can address anyone. Omit `slice:` for sprint-wide entries; omit `sprint:` for project-wide entries.
+Entries are **date-keyed and append-only** (newest at the tail) — reference one by its `[date · from → to]` header plus a few words of its body, never by position (a same-day header can repeat; the body disambiguates). `from`/`to` is any of `engineer-junior` / `engineer-senior` / `orchestrator` / `sprint-planner` / `planner` / `human`. Omit `slice:` for sprint-wide entries, `sprint:` for project-wide ones.
 
-Types: `BLOCKED` halts · `PENDING` defers (defaults taken, knowingly-incomplete spots, scope-creep opportunities) · `SOLVED` informational, only emitted alongside a `BLOCKED` or `PENDING` to mark a related thing resolved inline.
+Types: `BLOCKED` halts · `PENDING` defers · `SOLVED` informational, only emitted alongside a `BLOCKED` or `PENDING` to mark a related thing resolved inline.
 
 Resolve inline (do not delete prematurely); if decision-worthy, write a one-liner to `docs/decisions.md` and link from the Resolution line. At sprint end the orchestrator drops the oldest **resolved** entries beyond 100 (by date) — no renumbering; unresolved entries (`Resolution: pending`) are never pruned.
 
