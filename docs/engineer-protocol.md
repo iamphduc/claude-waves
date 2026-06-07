@@ -21,7 +21,7 @@ The orchestrator normally pre-creates your worktree and passes its path; `cd` in
 
 ## Path discipline
 
-Never touch the parent repo. **Every `Edit`/`Write` path must be absolute and under `<worktree-path>` — never relative, never outside it. Verify before writing; if not, stop.** (`Read` outside is fine.)
+Never touch the parent repo. **Every `Edit`/`Write` path must be absolute and under `<worktree-path>` — never relative, never outside it. Verify before writing; if not, stop — a slip silently corrupts the parent codebase.** (`Read` outside is fine.)
 
 `cd "<worktree-path>"` once at turn start so Bash runs there.
 
