@@ -10,11 +10,19 @@ Multi-agent Claude Code workflow: strategy → sprint → parallel implementatio
 
 ## Install
 
-Copy these folders into your project (new or existing repo):
+From your project root (new or existing repo), run:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/install.sh | bash
+```
+
+This copies into your project:
 
 - `agents/` → `.claude/agents/`
 - `skills/` → `.claude/skills/`
 - `docs/` → `docs/`
+
+It merges into existing folders and overwrites same-named files, so review your working tree afterward (or copy the folders by hand if you prefer).
 
 Everything the workflow needs ships in those folders, scaffolding included. Then fill two stubs for your project:
 
