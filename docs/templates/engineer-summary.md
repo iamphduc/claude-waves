@@ -1,6 +1,6 @@
 # Engineer summary template
 
-Engineers end their turn with this structured summary inline in their response (free-form prose gets truncated when relayed to the orchestrator).
+Engineers end their turn with this structured summary, inline in their response (never written to a file).
 
 - **Slice:** <slice-code>
 - **Changed files:** path → one-line description per file

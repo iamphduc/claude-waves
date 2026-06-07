@@ -15,11 +15,11 @@ Work in thinking mode. Draft the next `planned` sprint from `docs/plans/<plan-sl
    - `docs/codebase-structure.md` — codebase brief
    - `docs/decisions.md` — authoritative
    - `docs/known-issues/*.md` — durable constraints
-   - `docs/handoff-queue.md` — unresolved `PENDING` entries may belong in this sprint; pending `BLOCKED` entries must be resolved first — stop and tell the human
-   - Existing `docs/sprints/<sprint-slug>.md` — if a draft already exists, stop and surface it rather than overwriting; the human deletes it to regenerate, or edits it in place.
+   - `docs/handoff-queue.md` — fold relevant unresolved `PENDING` entries into this sprint; any pending `BLOCKED` entry → stop and tell the human
+   - Existing `docs/sprints/<sprint-slug>.md` — if a draft exists, stop and surface it; don't overwrite.
 
 ## Output
 
-Write `docs/sprints/<sprint-slug>.md` per `docs/templates/sprint.md`. The template is authoritative — follow its field semantics exactly.
+Write `docs/sprints/<sprint-slug>.md` per `docs/templates/sprint.md`.
 
-End your turn telling the user to review the sprint doc, then run `/code` (or `/autopilot`) to execute the sprint.
+End your turn telling the user to review the sprint doc, then run `/code` (or `/autopilot`).
