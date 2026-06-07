@@ -2,15 +2,9 @@
 
 Multi-agent Claude Code workflow: strategy → sprint → parallel implementation → review, with you as the merge gate.
 
-## Prerequisites
-
-- Claude Code.
-- `gh` CLI, authenticated.
-- `git`.
-
 ## Install
 
-From your project root (new or existing repo), run:
+Requires Claude Code, `git`, and an authenticated `gh` CLI. From your project root (new or existing repo), run:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/install.sh | bash
@@ -43,22 +37,7 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 
 ## Autonomous flow
 
-`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: auto-merges clean PRs (escalating low-confidence / non-trivial / `SEVERE:` PRs to you), verifies trunk between waves, chains sprints, and halts + notifies at each gate. Invoking it is your consent to the auto-merges. Defaults: `--max-sprints` unlimited, `--max-waves=20`, `--max-runtime=4h`.
-
-Full criteria and detection rules live in `docs/autonomous-policy.md`. Resume after a halt by re-invoking `/autopilot` with the same args.
-
-## Shortcuts
-
-- **`/fix <task>`** — single-task dispatch in an isolated worktree, no sprint doc.
-- **`/review [slug]`** — re-run the reviewer on the active sprint. Does not auto-archive; run `/code` afterward.
-- **`/wave-prompts [slug] [wave]`** — emit paste-ready dispatch prompts for one wave's slices, to run in separate Claude Code sessions instead of dispatching subagents. Read-only; you run them and merge the PRs.
-
-## When things halt
-
-- **Preflight** — halts before wave 1 if there's no `origin`, the merge-target isn't pushed, or a sprint prerequisite isn't on the merge-target. Fix, re-run.
-- **Wave merge gate** — expected. Merge PRs, reply `continue`.
-- **Escalation gate (autopilot)** — a mergeable PR carries a risk signal. Review, merge, reply `continue`.
-- **`BLOCKED` in handoff-queue** — resolve the issue or update the entry's `Resolution:` line, reply.
+`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: auto-merges clean PRs (escalating risky ones), verifies trunk between waves, chains sprints, and halts + notifies at each gate. Invoking it is your consent to the auto-merges. Criteria, defaults, and resume behavior live in `docs/autonomous-policy.md`.
 
 ## State on disk
 
