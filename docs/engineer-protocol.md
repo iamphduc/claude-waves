@@ -40,7 +40,12 @@ Any `BLOCKED` → stop immediately. Do not push, do not open a PR, do not clean 
 ## Shipping the work (only when no BLOCKED)
 
 1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note in the summary's Static checks field and cap Confidence at `medium`.
-2. **Runtime verification.** Green static checks routinely hide runtime regressions, so you verify your slice in a real browser before shipping — runtime is yours to own, not deferred to a later gate. Bring the app up per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), then drive it with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces (a page renders, a route hard-loads, a control works, a font/style applies). Check the real DOM snapshot, console, and network — not just that the page loaded. A behavior that fails → fix it here and re-verify, or `BLOCKED` if it needs judgment. Stop any servers you started. Record what you drove and confirmed in the summary's `Runtime verified` field. If there's no `## Smoke recipe` (you can't bring the app up) or the slice is pure-static with nothing to drive, note that there and cap Confidence at `medium`.
+2. **Runtime verification.** Verify your slice in a real browser before shipping — static checks hide runtime regressions:
+   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials).
+   - **Drive it** with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces — check the real DOM snapshot, console, and network, not just that the page loaded.
+   - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
+   - **When done:** stop any servers you started; record what you drove in the summary's `Runtime verified` field.
+   - **No `## Smoke recipe`, or a pure-static slice** with nothing to drive → note it there and cap Confidence at `medium`.
 3. **Commit, push, open the PR** against the merge-target. Prefix the commit message and PR title with the slice code.
 4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On any failure, surface `PENDING`, set Cleanup to `partial`, and stop the rest of cleanup. When `teardown` is `defer`, skip removal entirely: leave the worktree and branch intact for follow-up work and post-merge teardown by the orchestrator, and set Cleanup to `deferred — worktree <worktree-path> retained`.
 

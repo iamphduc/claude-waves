@@ -11,7 +11,7 @@ State on disk, re-read every resume: `docs/sprints/<sprint-slug>.md` (status boa
 
 ## Conventions
 
-- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each engineer its dispatch context per `docs/engineer-protocol.md`, with `teardown: defer` (worktrees stay up through merge so you can iterate; you remove them post-merge).
+- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each engineer its dispatch context per `docs/engineer-protocol.md`, with `teardown: defer` (worktrees stay up through merge; you remove them post-merge).
 - **Hand back for merge:** end the turn listing each open PR as `- <label>: <PR URL>` under a one-line header plus a "reply `continue`" line. Don't poll, auto-merge, or proceed.
 - **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` each PR you handed back; any unmerged → re-end the turn. Once all are merged, sync trunk (`git checkout <merge-target> && git pull origin <merge-target>`), set the PR/Status cells to `merged`/`done`, and tear down each merged slice's deferred worktree: `git worktree remove <worktree-path>` → `git branch -d <branch-name>` (no `--force`/`-D`; on failure leave it and note it).
 - **Reset a worktree:** `git reset --hard origin/<merge-target> && git clean -fd`, then re-run skipping pre-create.
@@ -31,7 +31,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 ### Per wave (run in order)
 
-**Resume a halted wave:** re-dispatch each `blocked` slice fresh (the human resolved the cause, not the worktree) — reset its worktree if it exists (per convention) else recreate it (step 2); dispatch (step 3) with any still-`pending` slice. Skip `merged`/`done`.
+**Resume a halted wave:** re-dispatch each `blocked` slice fresh — reset its worktree if it exists (per convention) else recreate it (step 2); dispatch (step 3) with any still-`pending` slice. Skip `merged`/`done`.
 
 1. **Sync** (skip on the first wave of the first sprint): confirm-on-resume the prior wave's `pr open` slices.
 2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.claude/worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<merge-target>` — branch names from the sprint doc's Branch column.
@@ -43,7 +43,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 ### Sprint complete (all waves `done`)
 
-Engineers verify their own slice's runtime in the browser before shipping (per `docs/engineer-protocol.md`), so there's no separate post-merge smoke gate — go straight to the reviewer.
+Engineers browser-verify their own runtime before shipping (per `docs/engineer-protocol.md`) — no separate smoke gate; go straight to the reviewer.
 
 **Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
 - **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.

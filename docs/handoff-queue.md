@@ -1,6 +1,6 @@
 # Handoff Queue
 
-Inter-agent communication. **The human is the ultimate arbiter** — `BLOCKED` entries halt the orchestrator until acknowledged. **One line per entry** so the queue is graspable at a glance; never break an entry across multiple lines.
+Inter-agent communication. **The human is the ultimate arbiter** — `BLOCKED` entries halt the orchestrator until acknowledged. **One line per entry** — never break an entry across multiple lines.
 
 Format: `` - `[YYYY-MM-DD · TYPE · from → to · sprint: <slug> · slice: <code>]` <body> **Resolution:** pending `` (or `**Resolution:** <YYYY-MM-DD> — <what changed> [optional link to docs/decisions.md#anchor]`).
 
