@@ -12,7 +12,7 @@ Work in thinking mode. Produce a strategic main plan under `docs/plans/`. Do not
    - `docs/decisions.md` — authoritative architectural decisions
    - `docs/known-issues/*.md` — durable constraints
    - `docs/plans/*.md` — existing plans (check for overlap; skip any marked `Status: archived`)
-   - `docs/handoff-queue.md` — unresolved `PENDING` entries are deferred work; pending `BLOCKED` entries are live problems — surface them to the user during the interview and resolve before drafting
+   - `docs/handoff-queue.md` — surface unresolved `PENDING` (deferred work) and pending `BLOCKED` (live problems) during the interview; resolve `BLOCKED` before drafting
 
    If `docs/` is empty, note it in the plan's Assumptions and ground in the codebase via `Read`, `Grep`, `Glob`.
 
@@ -24,7 +24,7 @@ Work in thinking mode. Produce a strategic main plan under `docs/plans/`. Do not
 
 ## Main-plan format
 
-Read `docs/templates/main-plan.md` before drafting. Produce a plan that matches its structure.
+Read `docs/templates/main-plan.md` before drafting.
 
 ## End of turn
 

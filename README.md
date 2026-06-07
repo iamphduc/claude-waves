@@ -30,8 +30,6 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 | — | *read the sprint doc* | **Your quality gate** — catch bad wave grouping or overlapping file ownership |
 | 3 | `/code [slug]` | Runs the wave loop: creates worktrees, dispatches engineers per wave, halts for you to merge |
 | — | merge PRs, reply `continue` | Repeat per wave |
-
-Prefer to run each wave's slices in your own Claude Code sessions instead of subagents? Use **`/wave-prompts [slug] [wave]`** to emit paste-ready prompts — same wave model, you run the sessions and merge the PRs, no automatic bookkeeping.
 | 4 | *reviewer (auto)* | Code audit; opens a follow-up PR or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives; `continue` chains into the next sprint |
 
