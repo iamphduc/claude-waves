@@ -25,7 +25,7 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 
 ### Update
 
-Refresh the agents/skills/templates and policy docs to the latest, without touching your `codebase-structure.md`, `decisions.md`, plans, or sprints (you'll be prompted before any stale file is deleted):
+Refresh the agents/skills/templates and policy docs to the latest. It only overwrites files that ship in this repo — it never deletes anything and never touches your `codebase-structure.md`, `decisions.md`, plans, or sprints:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/update.sh | bash
