@@ -23,6 +23,14 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 - `docs/codebase-structure.md` — your codebase brief; the **`## Smoke recipe`** section is required (engineers use it to bring the app up and browser-verify each slice before shipping).
 - `docs/decisions.md` — architectural decisions, as you make them.
 
+### Update
+
+Refresh the agents/skills/templates and policy docs to the latest, without touching your `codebase-structure.md`, `decisions.md`, plans, or sprints (you'll be prompted before any stale file is deleted):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/update.sh | bash
+```
+
 ## Manual flow
 
 | Step | Skill | What happens |
