@@ -3,9 +3,7 @@ name: autopilot
 description: Use when the user types /autopilot or asks to run the workflow autonomously across a plan. Also the resume command after a halt.
 ---
 
-**You run this in the main loop yourself** — dispatching engineers / reviewer / sprint-planner and notifying on halt.
-
-Run the **`/code` wave loop** (`.claude/skills/code/SKILL.md`) with the deltas below, under `docs/autonomous-policy.md` — read it at the start of every turn. Args: optional plan slug plus the policy's `--max-*` bounds.
+**Run the `/code` wave loop yourself** (`.claude/skills/code/SKILL.md`) — same main-loop, self-dispatch model — with the deltas below, under `docs/autonomous-policy.md`, which you read at the start of every turn. Beyond `/code` you also dispatch the `sprint-planner` and notify on halt. Args: optional plan slug plus the policy's `--max-*` bounds.
 
 ## Teardown
 
@@ -22,7 +20,3 @@ Don't end with "reply continue" — run one sprint per turn:
 1. `--max-sprints` reached → halt at the safety-bound gate (policy gate 5).
 2. No `planned` row left in the plan → halt at the plan-complete gate (policy gate 7).
 3. Else dispatch the `sprint-planner` and proceed straight into the new sprint's wave loop — no sprint-draft halt.
-
-## Safety counters
-
-Persist a `<!-- autopilot-run: started=<ISO8601> sprints=<N> waves=<N> -->` line — in the active sprint doc during a sprint, the plan doc between sprints (move it on start/archive; re-inject after `sprint-planner` writes a fresh doc). Re-derive the counters each turn, and check all three bounds (safety-bound gate) before each wave and after each archive.

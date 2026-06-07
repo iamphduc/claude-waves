@@ -39,10 +39,10 @@ After trunk sync, before dispatching the next wave: run the project's verificati
 
 ## Safety bounds
 
-Parsed from `/autopilot` args:
+Three independent caps parsed from `/autopilot` args; hitting any → halt cleanly at gate 5:
 
 - `--max-sprints=<N>` — cap on sprints completed this run. Default: unlimited (run until plan has no `planned` rows).
 - `--max-waves=<N>` — emergency cap on total waves dispatched this run. Default: `20`.
 - `--max-runtime=<duration>` — wall-clock cap (`30m`, `4h`, etc). Default: `4h`.
 
-Bounds are independent halt gates: hitting any → halt cleanly per gate 5.
+Track progress against them with a persisted counter line — `<!-- autopilot-run: started=<ISO8601> sprints=<N> waves=<N> -->` — kept in the active sprint doc during a sprint and the plan doc between sprints (move it on start/archive; re-inject after `sprint-planner` writes a fresh doc). Re-derive the counters each turn and check all three bounds before each wave and after each archive.
