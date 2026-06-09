@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# update.sh — refresh the multi-claude-workflow machinery in an existing project.
+# update.sh — refresh the claude-waves machinery in an existing project.
 #
 # Overwrites/creates ONLY the files that ship in this repo:
 #   agents/         -> .claude/agents/
@@ -13,11 +13,11 @@
 # custom skills/agents you added locally.
 #
 # Run from your project root:
-#   curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/update.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.sh | bash
 #
 set -euo pipefail
 
-REPO="https://github.com/iamphduc/multi-claude-workflow.git"
+REPO="https://github.com/iamphduc/claude-waves.git"
 BRANCH="main"
 DEST="$(pwd)"
 
@@ -26,7 +26,7 @@ TMP="$(mktemp -d)"
 cleanup() { rm -rf "$TMP"; }
 trap cleanup EXIT
 
-echo "Fetching multi-claude-workflow ..."
+echo "Fetching claude-waves ..."
 git clone --depth 1 --branch "$BRANCH" "$REPO" "$TMP/repo" >/dev/null 2>&1
 
 echo "Updating ..."

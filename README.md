@@ -1,13 +1,15 @@
-# multi-claude-workflow
+# claude-waves
 
-Multi-agent Claude Code workflow: strategy → sprint → parallel implementation → review, with you as the merge gate.
+Ship a plan in **waves** of parallel Claude engineers: strategy → sprint → parallel waves → review, with you as the merge gate between every wave.
+
+A *wave* is a batch of slices with non-overlapping file ownership, built concurrently in isolated worktrees. Each wave lands behind you, trunk is verified, then the next wave dispatches — manually with `/code`, or unattended with `/autopilot`.
 
 ## Install
 
 Requires Claude Code, `git`, and an authenticated `gh` CLI. From your project root (new or existing repo), run:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/install.sh | bash
 ```
 
 This copies into your project:
@@ -28,24 +30,24 @@ Everything the workflow needs ships in those folders, scaffolding included. Then
 Refresh the agents/skills/templates and policy docs to the latest. It only overwrites files that ship in this repo — it never deletes anything and never touches your `codebase-structure.md`, `decisions.md`, plans, or sprints:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/update.sh | bash
+curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.sh | bash
 ```
 
-## Manual flow
+## Manual flow — you ride each wave
 
 | Step | Skill | What happens |
 |---|---|---|
 | 1 | `/plan` | Planner interviews you, writes `docs/plans/<slug>.md` |
-| 2 | `/sprint [slug]` | Drafts `docs/sprints/<slug>.md` from a plan |
-| — | *read the sprint doc* | **Your quality gate** — catch bad wave grouping or overlapping file ownership |
-| 3 | `/code [slug]` | Runs the wave loop: creates worktrees, dispatches engineers per wave, halts for you to merge |
-| — | merge PRs, reply `continue` | Repeat per wave |
+| 2 | `/sprint [slug]` | Drafts `docs/sprints/<slug>.md` — slices grouped into waves by file ownership |
+| — | *read the sprint doc* | **Your quality gate** — catch bad wave grouping or overlapping file ownership before any engineer runs |
+| 3 | `/code [slug]` | Runs the **wave loop**: one worktree per slice, all engineers in the wave dispatched at once, then halts for you to merge |
+| — | merge the wave's PRs, reply `continue` | Next wave dispatches — repeat until the sprint's waves are done |
 | 4 | *reviewer (auto)* | Code audit; opens a follow-up PR or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives; `continue` chains into the next sprint |
 
-## Autonomous flow
+## Autonomous flow — the waves ride themselves
 
-`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: auto-merges clean PRs (escalating risky ones), verifies trunk between waves, chains sprints, and halts + notifies at each gate. Invoking it is your consent to the auto-merges. Criteria, defaults, and resume behavior live in `docs/autonomous-policy.md`.
+`/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: dispatches each wave, auto-merges clean PRs (escalating risky ones), verifies trunk between waves, chains sprints, and halts + notifies at each gate. Invoking it is your consent to the auto-merges. Criteria, defaults, and resume behavior live in `docs/autonomous-policy.md`.
 
 ## State on disk
 
