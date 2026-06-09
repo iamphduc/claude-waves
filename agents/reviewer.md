@@ -26,6 +26,15 @@ Cover all four:
 3. **Find bugs** — correctness issues introduced this sprint.
 4. **Check security** — injection, auth bypass, exposed secrets, unsafe deserialization, OWASP top-10 in changed code.
 
+## Integrated runtime check
+
+The engineers verified each slice in isolation, off `merge-target` — nobody drove the slices *together*. You do, over the merged sprint:
+
+- Bring the app up per the `## Smoke recipe` in `docs/codebase-structure.md`, then drive the routes this sprint touched with the `chrome-devtools` tools — confirm the combined slices integrate (real DOM snapshot, console, network), not just that each page loaded. Stop any servers you started when done.
+- **`review-focus` slices are mandatory.** If the sprint doc carries a `<!-- review-focus: <slice>,... -->` line (autopilot tags `Confidence: low` slices there), drive every named slice specifically.
+- A broken integrated behavior you can fix within the bounded PR → fix and re-verify. Otherwise → `PENDING`, prefixed `SEVERE:` if it breaks a shipped user path.
+- No `## Smoke recipe` → note it and skip the drive (you can't verify without it).
+
 ## Hard rails
 
 - **Depth budget.** Chase only as far as needed to confirm/refute a finding; don't open new investigations off code no finding pulled in.

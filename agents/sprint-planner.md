@@ -22,4 +22,6 @@ Work in thinking mode. Draft the next `planned` sprint from `docs/plans/<plan-sl
 
 Write `docs/sprints/<sprint-slug>.md` per `docs/templates/sprint.md`.
 
+**Self-check before finishing** (autopilot proceeds without a human reading this doc, so this is the only guard on wave grouping). For every wave, confirm the `Files owned` sets of its slices are pairwise **disjoint** and each path is real. If two slices in a wave touch the same file, push the later one to the next wave — respecting `Depends on` — until every wave is conflict-free. State `Wave file-ownership: verified disjoint` in your end-of-turn message.
+
 End your turn telling the user to review the sprint doc, then run `/code` (or `/autopilot`).
