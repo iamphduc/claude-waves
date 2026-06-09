@@ -46,7 +46,7 @@ After a wave's PRs merge and trunk syncs, before the next wave: run the project'
 Three caps from `/autopilot` args; hitting any → halt at gate 5:
 
 - `--max-sprints=<N>` — sprints completed. Default: unlimited (until no `planned` rows).
-- `--max-waves=<N>` — total waves dispatched. Default: `50`.
+- `--max-waves=<N>` — total waves dispatched. Default: `20`.
 - `--max-runtime=<duration>` — wall-clock (`30m`, `4h`). Default: `12h`.
 
 Persist a counter line `<!-- autopilot-run: started=<ISO8601> sprints=<N> waves=<N> -->` in the active sprint doc (the plan doc between sprints; move on start/archive, re-inject after `sprint-planner` writes a fresh doc). Re-derive each turn; check all bounds before each wave and after each archive.
