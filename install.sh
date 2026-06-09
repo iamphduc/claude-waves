@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# install.sh — bootstrap a project with the multi-claude-workflow setup.
+# install.sh — bootstrap a project with the claude-waves setup.
 #
 # Copies, into the current directory:
 #   agents/  -> .claude/agents/
@@ -8,11 +8,11 @@
 #   docs/    -> docs/
 #
 # Run from your project root:
-#   curl -fsSL https://raw.githubusercontent.com/iamphduc/multi-claude-workflow/main/install.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/install.sh | bash
 #
 set -euo pipefail
 
-REPO="https://github.com/iamphduc/multi-claude-workflow.git"
+REPO="https://github.com/iamphduc/claude-waves.git"
 BRANCH="main"
 DEST="$(pwd)"
 
@@ -21,7 +21,7 @@ TMP="$(mktemp -d)"
 cleanup() { rm -rf "$TMP"; }
 trap cleanup EXIT
 
-echo "Fetching multi-claude-workflow ..."
+echo "Fetching claude-waves ..."
 git clone --depth 1 --branch "$BRANCH" "$REPO" "$TMP/repo" >/dev/null 2>&1
 
 # Copy a source dir's CONTENTS into a destination dir, merging with anything
