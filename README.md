@@ -51,22 +51,22 @@ curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.s
 
 ```
                                        ┌────────────────────────────────── SPRINT LOOP (outer) ──────────────────────────────────┐
-                                       ▼                                                                                         │
+                                       v                                                                                         │
 ┌───────────┐   ┌────────────┐   ┌────────────┐   ╔═══════════ WAVE LOOP (inner) ═══════════╗   ┌───────────┐   ┌───────────┐    │
-│ /autopilot│──▶│ Read policy│──▶│ Read sprint│──▶║ ┌──────────┐   ┌──────────┐   ┌───────┐ ║──▶│ Reviewer  │──▶│ Archive   │    │
-│ plan-slug │   │ + bounds   │   │ doc        │   ║ │ Dispatch │──▶│Auto-merge│──▶│ Verify│ ║   │ +auto-mrg │   │ +mark     │    │
+│ /autopilot│──>│ Read policy│──>│ Read sprint│──>║ ┌──────────┐   ┌──────────┐   ┌───────┐ ║──>│ Reviewer  │──>│ Archive   │    │
+│ plan-slug │   │ + bounds   │   │ doc        │   ║ │ Dispatch │──>│Auto-merge│──>│ Verify│ ║   │ +auto-mrg │   │ +mark     │    │
 └───────────┘   └────────────┘   └────────────┘   ║ │ engineers│   │clean PRs │   │(waves)│ ║   └───────────┘   │ plan row  │    │
                                                   ║ └──────────┘   └──────────┘   └───┬───┘ ║                   └─────┬─────┘    │
-                                                  ║      ▲                            │     ║                         │          │
-                                                  ║      └──── more waves ◀───────────┘     ║                         │          │
+                                                  ║      ^                            │     ║                         │          │
+                                                  ║      └──── more waves <───────────┘     ║                         │          │
                                                   ╚═════════════════════════════════════════╝                         │          │
                                                                                         ┌─────────────────────────────┘          │
                                                                                         │                                        │
                         ┌──────────────┐                                       planned rows left?                                │
-                        │ Plan complete│◀──── no ───────────────────────────────────────┴─────── yes ───────┐                    │
-                        └──────────────┘                                                       ┌────────────▼─────────────┐      │
+                        │ Plan complete│<──── no ───────────────────────────────────────┴─────── yes ───────┐                    │
+                        └──────────────┘                                                       ┌────────────v─────────────┐      │
                                                                                                │sprint-planner drafts next│──────┘
-                                                                                               │sprint ──▶ (re-read doc)  │
+                                                                                               │sprint ──> (re-read doc)  │
                                                                                                └──────────────────────────┘
 
 Any policy gate at any step → halt + notify, then end the turn.
