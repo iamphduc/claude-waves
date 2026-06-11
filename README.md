@@ -49,6 +49,29 @@ curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.s
 
 `/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: dispatches each wave, auto-merges clean PRs (escalating risky ones), verifies trunk between waves, chains sprints, and halts + notifies at each gate. Invoking it is your consent to the auto-merges. Criteria, defaults, and resume behavior live in `docs/autonomous-policy.md`.
 
+```
+                                       ┌────────────────────────────────── SPRINT LOOP (outer) ──────────────────────────────────┐
+                                       ▼                                                                                         │
+┌───────────┐   ┌────────────┐   ┌────────────┐   ╔═══════════ WAVE LOOP (inner) ═══════════╗   ┌───────────┐   ┌───────────┐    │
+│ /autopilot│──▶│ Read policy│──▶│ Read sprint│──▶║ ┌──────────┐   ┌──────────┐   ┌───────┐ ║──▶│ Reviewer  │──▶│ Archive   │    │
+│ plan-slug │   │ + bounds   │   │ doc        │   ║ │ Dispatch │──▶│Auto-merge│──▶│ Verify│ ║   │ +auto-mrg │   │ +mark     │    │
+└───────────┘   └────────────┘   └────────────┘   ║ │ engineers│   │clean PRs │   │(waves)│ ║   └───────────┘   │ plan row  │    │
+                                                  ║ └──────────┘   └──────────┘   └───┬───┘ ║                   └─────┬─────┘    │
+                                                  ║      ▲                            │     ║                         │          │
+                                                  ║      └──── more waves ◀───────────┘     ║                         │          │
+                                                  ╚═════════════════════════════════════════╝                         │          │
+                                                                                        ┌─────────────────────────────┘          │
+                                                                                        │                                        │
+                        ┌──────────────┐                                       planned rows left?                                │
+                        │ Plan complete│◀──── no ───────────────────────────────────────┴─────── yes ───────┐                    │
+                        └──────────────┘                                                       ┌────────────▼─────────────┐      │
+                                                                                               │sprint-planner drafts next│──────┘
+                                                                                               │sprint ──▶ (re-read doc)  │
+                                                                                               └──────────────────────────┘
+
+Any policy gate at any step → halt + notify, then end the turn.
+```
+
 ## State on disk
 
 ```
