@@ -1,6 +1,6 @@
 ---
 name: code
-description: Use when the user types /code or asks to execute a sprint via the wave loop — dispatch engineers per wave, hand back to the human to merge each wave's PRs, then review and archive.
+description: Use when the user types /code or asks to execute a sprint via the wave loop — dispatch engineers per wave, hand back each wave's PR to merge, then review, final-merge the plan branch, and archive.
 ---
 
 Work in thinking mode. Run this wave loop in the main loop; dispatch engineers and the reviewer via `Agent`.
@@ -11,10 +11,12 @@ State on disk, re-read every resume: `docs/sprints/<sprint-slug>.md` (status boa
 
 ## Conventions
 
-- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each engineer its dispatch context per `docs/engineer-protocol.md`, with `teardown: defer` (worktrees stay up through merge; you remove them post-merge).
-- **Hand back for merge:** end the turn listing each open PR as `- <label>: <PR URL>` under a one-line header plus a "reply `continue`" line. Don't poll, auto-merge, or proceed.
-- **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` each PR you handed back; any unmerged → re-end the turn. Once all are merged, sync trunk (`git checkout <merge-target> && git pull origin <merge-target>`), set the PR/Status cells to `merged`/`done`, and tear down each merged slice's deferred worktree: `git worktree remove <worktree-path>` → `git branch -d <branch-name>` (no `--force`/`-D`; on failure leave it and note it).
-- **Reset a worktree:** `git reset --hard origin/<merge-target> && git clean -fd`, then re-run skipping pre-create.
+- **Plan integration branch:** cut `<plan-slug>` off `origin/<merge-target>` once at plan start (Preflight), push it. Slice branches, wave heads, and the reviewer branch cut off it; their PRs target it. `<merge-target>` (default `main`) only sees the plan via **one** final PR at Plan complete.
+- **Dispatch:** one `Agent` call per slice in one message, **no `isolation`**; pass each its context per `docs/engineer-protocol.md` with **merge-target `<plan-slug>`** and `teardown: defer`. Engineers push their branch and don't open PRs — you integrate the wave and open its one PR.
+- **Integrate a wave:** `git fetch origin`; cut wave head `<sprint-slug>-w<N>` off `origin/<plan-slug>`; merge each pushed slice branch into it **non-squash** (disjoint → clean; a conflict → halt `BLOCKED` from `orchestrator`); verify the combined wave on the head per the `## Smoke recipe` (failure → halt `BLOCKED`); push it, `gh pr create --base <plan-slug>` one PR titled `Wave <N>`.
+- **Hand back for merge:** end the turn with the wave's one PR as `- <label>: <PR URL>` under a one-line header plus a "reply `continue`" line. Don't poll, auto-merge, or proceed.
+- **Confirm-on-resume:** `gh pr view <URL> --json mergedAt,state` the wave's PR; unmerged → re-end. Once merged: sync the plan branch (`git checkout <plan-slug> && git pull origin <plan-slug>`), set its PR/Status cells to `merged`/`done`, tear down the wave — each slice's worktree (`git worktree remove` → `git branch -d` → `git push origin --delete <branch>`) and the wave head (local + remote). No `--force`/`-D`; on failure leave it and note it.
+- **Reset a worktree:** `git reset --hard origin/<plan-slug> && git clean -fd`, then re-run skipping pre-create.
 - **Gate-worktree resume** (reviewer): if the branch exists, find its PR — open → re-end the turn pointing at it; merged → confirm-on-resume, then skip ahead; none → reset the worktree and re-run.
 
 ## Preflight (once, before the first wave; skip on resume mid-sprint)
@@ -25,6 +27,8 @@ Before pre-creating worktrees, halt naming the first check that fails:
 - The merge-target is on origin (`git ls-remote --heads origin <merge-target>` returns a ref).
 - Every non-slice prerequisite (new dependencies, the plan/sprint docs) is committed and pushed to the merge-target.
 
+Then **create the plan integration branch** (skip if `git ls-remote --heads origin <plan-slug>` exists — resuming): `git fetch origin && git branch <plan-slug> origin/<merge-target> && git push -u origin <plan-slug>`.
+
 ## The loop
 
 For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to find the next wave); if missing → halt and tell the human to run `/sprint`, never draft it yourself.
@@ -33,21 +37,26 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 **Resume a halted wave:** re-dispatch each `blocked` slice fresh — reset its worktree if it exists (per convention) else recreate it (step 2); dispatch (step 3) with any still-`pending` slice. Skip `merged`/`done`.
 
-1. **Sync** (skip on the first wave of the first sprint): confirm-on-resume the prior wave's `pr open` slices.
-2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.claude/worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<merge-target>` — branch names from the sprint doc's Branch column.
+1. **Sync** (skip on the first wave of the first sprint): confirm-on-resume the prior wave's PR.
+2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.claude/worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<plan-slug>` — branch names from the sprint doc's Branch column.
 3. **Dispatch** per the Dispatch convention, subagent_type `engineer-junior`/`engineer-senior` per the sprint doc.
 4. **Translate concerns:** append each engineer's `Concerns` lines (`[TYPE] body`) to `docs/handoff-queue.md` per its template (`from: engineer-<tier>`).
-5. **Update the status board:** set each slice's PR and Status per `docs/templates/sprint.md`.
+5. **Update the status board:** set each slice's Status to `pushed` (or `blocked`) per `docs/templates/sprint.md`; the PR cell is filled in step 7.
 6. **Halt check.** Any `BLOCKED` concern this wave → halt, naming the trigger and queue entry. If >50% of the wave's slices ended `blocked`, first append a wave-summary `BLOCKED` entry from `orchestrator` and point the halt at it.
-7. **Hand back for merge** per convention (header `Wave <N> of sprint <sprint-slug> awaiting merge`, merge in any order → reply `continue` to proceed).
+7. **Integrate & open the wave PR** (only when no `BLOCKED`): per the Integrate convention. Set the wave's slices' PR cell to its URL.
+8. **Hand back for merge** per convention (header `Wave <N> of sprint <sprint-slug> awaiting merge` → reply `continue` to proceed).
 
 ### Sprint complete (all waves `done`)
 
 Go straight to the reviewer — no post-merge smoke gate.
 
 **Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
-- **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<merge-target>`, then dispatch per convention with the sprint-slug and merged slice branches.
-- **Triage & ship:** translate `PENDING`/`SOLVED` concerns, routing a `SEVERE:` `PENDING` to the hand-back, else into the Archive gate's end-of-turn message. `PR: clean` → skip to archive, else open a PR and hand back per convention (`Sprint <sprint-slug> review awaiting merge`).
+- **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<plan-slug>`, then dispatch per convention with the sprint-slug and the sprint's merged slice branches.
+- **Triage & ship:** translate `PENDING`/`SOLVED` concerns, routing a `SEVERE:` `PENDING` to the hand-back, else into the Archive gate's end-of-turn message. `PR: clean` → skip to archive, else open a PR (`--base <plan-slug>`) and hand back per convention (`Sprint <sprint-slug> review awaiting merge`).
 
 **Archive & advance.** Append the Sprint summary (per `docs/templates/sprint.md`), flip the doc `Status:` to `archived`, and `mv` it to `docs/sprints/archive/`.
-- **Update the plan & end:** set the sprint's row in `docs/plans/<plan-slug>.md` to `done` (reshape later rows only if unresolved `PENDING`s require it — never rewrite history), then end the turn: `Sprint <sprint-slug> complete. Reply 'continue' to start the next sprint.`
+- **Update the plan & advance:** set the sprint's row in `docs/plans/<plan-slug>.md` to `done` (reshape later rows only if unresolved `PENDING`s require it — never rewrite history). If a `planned` sprint row remains → end the turn: `Sprint <sprint-slug> complete. Reply 'continue' to start the next sprint.` If none remains → go to **Plan complete**.
+
+### Plan complete (no `planned` sprint rows left)
+
+The whole plan sits on `<plan-slug>`; merge it to the desired branch in **one** PR: `gh pr create --base <merge-target> --head <plan-slug>`, titled for the plan; hand back (`Plan <plan-slug> complete — final merge awaiting`). On resume once merged: sync `<merge-target>`, tear down `<plan-slug>` (local + remote). End: `Plan <plan-slug> merged to <merge-target>. Done.`

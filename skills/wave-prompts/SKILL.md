@@ -14,13 +14,13 @@ Parse from args: the sprint slug (if any), the wave number (default `1`), and `-
 
 ## Preflight (read-only)
 
-Check `origin` exists (`git remote get-url origin`) and the merge-target is on origin (`git ls-remote --heads origin <merge-target>`). On failure, print a warning banner atop your output — do not halt.
+Check `origin` exists (`git remote get-url origin`), the merge-target is on origin (`git ls-remote --heads origin <merge-target>`), and the **plan integration branch** `<plan-slug>` (from the sprint doc's `From plan:` header) is on origin. If `<plan-slug>` is missing, the banner should say to create it first: `git branch <plan-slug> origin/<merge-target> && git push -u origin <plan-slug>`. On failure, print a warning banner atop your output — do not halt.
 
 ## Emit
 
 Select the requested wave's slices (grouped by the **Wave** column). If that wave has no slices, say so and stop. Otherwise:
 
-1. Print a header: the wave number; the slices in it, each tagged with its `Agent` tier + difficulty from the status board; and the reminder — *launch one session per block **at the project root**, paste it, merge the PRs when green, then re-run `/wave-prompts <slug> <next-wave>`.*
+1. Print a header: the wave number; the slices in it, each tagged with its `Agent` tier + difficulty from the status board; and the reminder — *launch one session per block **at the project root**, paste it; when all slices are pushed and green, integrate the wave (cut a wave head off `<plan-slug>`, merge the slice branches into it, verify, open one PR `--base <plan-slug>`), then re-run `/wave-prompts <slug> <next-wave>`. After the plan's last wave, open one final PR `<plan-slug>` → `<merge-target>`.*
 2. Print one fenced block per slice, filled from the sprint doc (if a slice lacks scope, files owned, or success criteria, flag it in the header instead of emitting a blank field):
 
    ```
@@ -29,7 +29,7 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    - sprint slug:      <slug>
    - slice code:       <code>
    - branch:           <slug>-<code>
-   - merge-target:     <merge-target>
+   - merge-target:     <plan-slug>   (the plan integration branch — base your worktree on it)
    - parent-repo:      <absolute project root>
    - worktree:         <parent>/.claude/worktrees/<slug>-<code>/
    - scope:            <from per-slice detail>
@@ -37,9 +37,10 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    - success criteria: <criteria>
    - teardown:         defer
 
-   Create your worktree per the protocol, then ship a PR. Leave the worktree
+   Create your worktree per the protocol, then push your branch — do NOT open
+   a PR (the wave is integrated into one PR afterward). Leave the worktree
    intact (teardown: defer) so this session can apply follow-up fixes to the
-   same branch/PR; it gets removed after the PR is merged.
+   same branch; it gets removed after the wave PR merges.
    ```
 
    `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column.

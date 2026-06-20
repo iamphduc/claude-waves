@@ -6,10 +6,10 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 
 - **sprint slug**, **slice code**, **branch name**
 - **scope**, **files owned**, **success criteria**
-- **merge-target branch** (usually `main`)
+- **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop, `main` for standalone `/fix`/`/review`.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
-- **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after the PR; orchestrator removes it post-merge) or `immediate` (remove it yourself at ship).
+- **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
 
 Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` — it's optional.)
 
@@ -44,7 +44,9 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
    - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
    - **When done:** stop any servers you started; record what you drove in the summary's `Runtime verified` field.
    - **No `## Smoke recipe`, or a pure-static slice** with nothing to drive → note it there and cap Confidence at `medium`.
-3. **Commit, push, open the PR** against the merge-target. Prefix the commit message and PR title with the slice code.
+3. **Commit and push your branch** (commit message prefixed with the slice code). Then:
+   - **Wave-loop dispatch** (orchestrator pre-created your worktree): **don't open a PR** — it integrates your branch into the wave's one PR; report the pushed branch.
+   - **Standalone** (`/fix`): **open a PR** against the merge-target (title prefixed with the slice code), report its URL.
 4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
 
 Never use `--force` or `-D` — if something blocks, let a human investigate.
