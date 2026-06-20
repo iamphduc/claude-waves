@@ -4,7 +4,7 @@ Engineers end their turn with this structured summary, inline in their response 
 
 - **Slice:** <slice-code>
 - **Changed files:** path → one-line description per file
-- **PR:** URL — or `blocked` — or `skipped — verification failed` — or `clean` (no change warranted)
+- **Pushed branch / PR:** wave-loop → `<branch-name>` (pushed; no PR). Standalone `/fix` → PR URL. Or `blocked` / `skipped — verification failed` / `clean`.
 - **Concerns:** list each as `[TYPE] one-line body`, or `none`
 - **Static checks:** commands run and their results — or `no harness found` — or `failed — see concerns` (tests / typecheck / lint / build)
 - **Runtime verified:** runtime-observable behaviors you drove in the browser and confirmed (e.g. `/guide hard-loads`, `Nunito renders`, `locale switch persists`) — or `none — pure static slice` — or `not verified — no smoke recipe` (cap Confidence at `medium`)

@@ -13,9 +13,9 @@ A PR is **mechanically mergeable** only if **all** hold:
 
 **Precondition.** Merge-target branch protection must **not** require a human approving review (else `mergeStateStatus` stays `BLOCKED` → gate 3).
 
-**Escalation valve.** **Withhold the merge and halt (gate 6)** if the slice's engineer summary reported `Confidence: low`.
+**Escalation valve.** **Withhold the merge and halt (gate 6)** if **any** slice in the wave reported `Confidence: low`.
 
-Otherwise merge (merge commit, not squash): `gh pr merge <url> --merge --delete-branch`, then set the sprint doc's PR cell to `merged` and Status to `done`. Any failure → halt + notify (gate 3).
+Otherwise merge (merge commit, not squash): `gh pr merge <url> --merge --delete-branch`. Wave PR → also delete the pushed slice branches (`git push origin --delete <branch>`), set the wave's PR cell `merged` and its slices `done`. Final plan PR → tear down `<plan-slug>`. Any failure → halt + notify (gate 3).
 
 ## Halt gates
 
@@ -35,7 +35,7 @@ On halt: append a one-line `docs/handoff-queue.md` entry from `orchestrator` nam
 
 ## Inter-wave verification
 
-After trunk sync, before the next wave: run the project's verification command in the parent repo — the `Verification:` line in `docs/codebase-structure.md`, else detect it from repo files. Non-zero exit → halt + notify (gate 4).
+Verify the wave's combined slices on the wave head `<sprint-slug>-w<N>` **before** opening the wave PR (the Integrate step) — pre-merge, so a bad wave never reaches the plan branch. Bring the app up and exercise the merged slices, else run the project's verification command (`Verification:` in `docs/codebase-structure.md`, else detect from repo files). Failure → halt + notify (gate 4). It's autopilot's only check on a wave — exercise behavior, not just a clean merge.
 
 ## Safety bounds
 

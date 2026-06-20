@@ -8,7 +8,7 @@ _From plan: docs/plans/<plan-slug>.md · Slug: <sprint-slug> · Status: <active 
 |------|-------|-------|------------|-------|--------|----|--------|------------|
 | 1 | <slice-code> | <one-line> | 1–5 | engineer-senior \| engineer-junior | <branch-name> | — | pending | — |
 
-Wave membership lives in the **Wave** column; slices sharing a wave run in parallel and must own disjoint file sets.
+Wave membership lives in the **Wave** column — **computed by the planner, not authored** (see Field semantics). Slices in a wave run in parallel and own disjoint files. Authored levels: **plan → sprint → slice**. Engineers push branches; the orchestrator integrates each wave into **one PR** on the plan branch (see **Branch naming**).
 
 ## Per-slice detail
 
@@ -23,14 +23,17 @@ Wave membership lives in the **Wave** column; slices sharing a wave run in paral
 
 ## Field semantics
 
-- **Wave:** the leading column — the parallel batch a slice runs in. Slices sharing a wave run concurrently and **must own disjoint file sets**. Assign waves to **maximize parallel width**: each slice goes in the *earliest* wave where (a) all its `Depends on` slices sit in strictly-earlier waves and (b) its `Files owned` are disjoint from every slice already in that wave. Open a new wave only when a dependency or file conflict forces it — never split independent, non-conflicting slices across waves. **Cap each wave at 5 slices**; eligible overflow spills into the next wave (still respecting deps and disjoint files).
+- **Wave:** the leading column — a **computed** band, not an authored level: the parallel batch a slice runs in. Slices sharing a wave run concurrently and **must own disjoint file sets**. The planner derives waves to **maximize parallel width**: each slice goes in the *earliest* wave where (a) all its `Depends on` slices sit in strictly-earlier waves and (b) its `Files owned` are disjoint from every slice already in that wave. Open a new wave only when a dependency or file conflict forces it — never split independent, non-conflicting slices across waves. **Cap each wave at 5 slices** (a scheduler tuning knob, not a planning rule); eligible overflow spills into the next wave (still respecting deps and disjoint files).
 - **Slug:** matches the row in the main plan's Sprint sequence (`docs/plans/<plan-slug>.md`).
 - **Sprint doc Status:** `active` while in `docs/sprints/`; flipped to `archived` immediately before `mv` to `docs/sprints/archive/`.
-- **Slice Status transitions:** `pending` → `pr open` → `done`, with `blocked` as terminal.
-- **PR values:** `—` / URL / `blocked` / `skipped — verification failed` / `merged`.
+- **Slice Status transitions:** `pending` → `pushed` → `done` (`blocked` terminal); `done` when the wave's PR merges.
+- **PR values (per wave):** `—` / the wave's PR URL (shared by its slices) / `blocked` / `skipped — verification failed` / `merged`.
 - **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail.
 - **Agent:** derived from Difficulty — **1–2 → `engineer-junior`**, **3–5 → `engineer-senior`**. The board is canonical; per-slice detail never re-states the score or agent.
-- **Branch naming:** `<sprint-slug>-<slice-code>` (kebab-case, **flat — no `/`** so a slice branch can't D/F-collide with a `<sprint-slug>`-named integration branch used as the merge-target).
+- **Branch naming** (all flat kebab — **no `/`**, so none D/F-collide):
+  - **Plan integration branch** `<plan-slug>` — cut off `main` once at plan start; all wave and reviewer PRs target it; one final PR merges it to `main` at plan end.
+  - **Slice branch** `<sprint-slug>-<slice-code>` — an engineer's branch, off `<plan-slug>`.
+  - **Wave head** `<sprint-slug>-w<N>` — off `<plan-slug>`; the orchestrator merges the wave's slice branches in (non-squash, for `git bisect`) and opens the wave's one PR to `<plan-slug>`.
 - **Files owned:** explicit paths, verified to exist; cross-checked for disjointness within the wave.
 
 ## Sprint summary

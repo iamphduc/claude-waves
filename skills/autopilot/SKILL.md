@@ -7,16 +7,16 @@ description: Use when the user types /autopilot or asks to run the workflow auto
 
 ## Teardown
 
-Dispatch engineers with `teardown: immediate` (not `/code`'s `defer`); skip `/code`'s post-merge worktree removal.
+Dispatch engineers with `teardown: immediate` — they remove their own worktrees after pushing; you integrate from origin refs. After each wave PR merges, delete the pushed slice branches and wave head (`git push origin --delete <branch>`). At **Plan complete**, delete `<plan-slug>`.
 
 ## Auto-merge
 
-Don't hand back the wave or reviewer PRs. For each, apply the policy's auto-merge criteria + escalation valve: merge the clean ones; a failed criterion or risk-flagged PR halts (merge the wave's others first).
+Don't hand back any PR — wave PR, reviewer PR, or final plan PR. Apply the policy's auto-merge criteria + escalation valve: merge if clean; a failed criterion or risk-flagged PR halts.
 
 ## Between sprints
 
 Don't end with "reply continue" — run one sprint per turn:
 
 1. `--max-sprints` reached → halt at the safety-bound gate (policy gate 5).
-2. No `planned` row left in the plan → halt at the plan-complete gate (policy gate 7).
+2. No `planned` row left → run **Plan complete**: open the final `<plan-slug>` → `<merge-target>` PR, auto-merge it, tear down `<plan-slug>`, then halt at gate 7 + notify.
 3. Else dispatch the `sprint-planner` and proceed straight into the new sprint's wave loop — no sprint-draft halt.
