@@ -6,7 +6,8 @@ The **`## Smoke recipe`** below tells each engineer how to bring the app up for 
 
 ## Smoke recipe
 
-- **Start commands:** <!-- web / api / worker / etc. -->
+- **Start commands:** <!-- web / api / worker — take the port from the engineer's assigned dev ports, e.g. `pnpm dev --port <web>` -->
+- **Ready line:** <!-- the log line that means "serving", e.g. `Ready in`; engineers wait on this, not on a sleep -->
 - **DB setup:** <!-- migrate + seed commands -->
 - **Login credentials:** <!-- seeded test accounts, per role -->
 - **Key URLs:** <!-- per shell / route -->

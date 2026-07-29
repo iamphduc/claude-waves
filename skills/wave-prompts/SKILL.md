@@ -32,6 +32,7 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    - merge-target:     <plan-slug>   (the plan integration branch — base your worktree on it)
    - parent-repo:      <absolute project root>
    - worktree:         <parent>/.claude/worktrees/<slug>-<code>/
+   - dev ports:        web <3000+10i>, api <3001+10i>
    - scope:            <from per-slice detail>
    - files owned:      <paths>
    - success criteria: <criteria>
@@ -43,6 +44,6 @@ Select the requested wave's slices (grouped by the **Wave** column). If that wav
    same branch; it gets removed after the wave PR merges.
    ```
 
-   `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column.
+   `<absolute project root>` is your cwd; `branch` is the sprint doc's Branch column. Resolve **dev ports** to literal numbers before printing: *i* is the slice's 1-based row in the status board, so row 1 gets `web 3010, api 3011`, row 2 `web 3020, api 3021`. These sessions run concurrently and nothing supervises them — no two blocks may share a port, and offset 0 (`3000`/`3001`) is reserved for whoever verifies the wave head.
 
 Then end your turn — there is no state to resume.

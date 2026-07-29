@@ -9,6 +9,7 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 - **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop, `main` for standalone `/fix`/`/review`.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
+- **dev ports** *(optional, default `web 3010` / `api 3011`)* — the port pair reserved for your worktree. Use exactly these; never pick your own, never retry on a neighbouring port.
 - **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
 
 Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` — it's optional.)
@@ -39,10 +40,14 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 
 1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note it in the summary's Static checks field, cap Confidence at `medium`.
 2. **Runtime verification.** Verify your slice in a real browser before shipping:
-   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials).
+   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), on your assigned **dev ports**:
+     - Check whether a server for *this worktree* is already listening on your port; reuse it instead of starting a second one.
+     - Start it as a background tool call (`run_in_background: true`) — never a `nohup … &` wrapper. The wrapper exits immediately, so the harness reports the still-running server as "completed" and you lose both the log handle and the PID.
+     - Wait for the ready line in the log, not a fixed `sleep`.
+     - Two servers sharing one build-cache dir corrupt it. Compile/cache errors right after a restart mean a stray process is still running — kill the stray; deleting the cache is not the first move.
    - **Drive it** with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces — check the real DOM snapshot, console, and network, not just that the page loaded.
    - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
-   - **When done:** stop any servers you started; record what you drove in the summary's `Runtime verified` field.
+   - **When done:** stop every server you started and any stray you found; record what you drove in the summary's `Runtime verified` field.
    - **No `## Smoke recipe`, or a pure-static slice** with nothing to drive → note it there and cap Confidence at `medium`.
 3. **Commit and push your branch** (commit message prefixed with the slice code). Then:
    - **Wave-loop dispatch** (orchestrator pre-created your worktree): **don't open a PR** — it integrates your branch into the wave's one PR; report the pushed branch.
