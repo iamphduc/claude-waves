@@ -1,6 +1,6 @@
 # Engineer protocol
 
-Execute a scoped task on a dedicated branch in an isolated worktree. Report only via the final structured summary — the **orchestrator** (`/code` or `/autopilot`) parses your concerns into `docs/handoff-queue.md`.
+Execute a scoped task on a dedicated branch in an isolated worktree. Report only via the final structured summary — the skill that dispatched you files your concerns into `docs/handoff-queue.md`.
 
 ## Required dispatch context
 
@@ -9,7 +9,7 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 - **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop; standalone callers derive it per **Standalone invocation**.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
-- **dev ports** *(optional, default `web 3010` / `api 3011`)* — the port pair reserved for your worktree. Use exactly these; never pick your own, never retry on a neighbouring port.
+- **dev ports** *(optional, default `web 3900` / `api 3901` — outside the range dispatchers assign, so a standalone run can't collide with a live wave)* — the port pair reserved for your worktree. Use exactly these; never pick your own, never retry on a neighbouring port.
 - **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
 
 Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` or `dev ports` — both are optional, and a standalone invocation derives what it's missing per the next section instead of blocking.)
@@ -62,9 +62,9 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
    - **When done:** stop every server you started and any stray you found; record what you drove in the summary's `Runtime verified` field.
    - **No `## Smoke recipe`, or a pure-static slice** with nothing to drive → note it there and cap Confidence at `medium`.
 3. **Commit and push your branch** (commit message prefixed with the slice code). Then:
-   - **Wave-loop dispatch** (orchestrator pre-created your worktree): **don't open a PR** — it integrates your branch into the wave's one PR; report the pushed branch.
-   - **Standalone** (`/fix`): **open a PR** against the merge-target (title prefixed with the slice code), report its URL.
-4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git checkout <merge-target>` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
+   - **Slice engineer in the wave loop:** **don't open a PR** — the orchestrator integrates your branch into the wave's one PR; report the pushed branch.
+   - **Everyone else** — standalone `/fix`, and the reviewer whether or not its worktree was pre-created: **open a PR** against the merge-target (title prefixed with the slice code), report its URL.
+4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` (you can't remove a worktree you're standing in) → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo — it changes the human's checked-out branch, and concurrent engineers would race each other for it. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
 
 Never use `--force` or `-D` — if something blocks, let a human investigate.
 
