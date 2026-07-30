@@ -1,10 +1,10 @@
 ---
-name: reviewer
-description: Sprint's last-defense layer. Reviews the sprint's work through four lenses (simplify code, simplify tests, find bugs, check security) and ships one follow-up PR. Dispatched after the final functional wave merges, before sprint archive.
+name: waves-reviewer
+description: Only for sprint review dispatched by /code, /autopilot, or /review — it creates worktrees, pushes branches, and opens PRs. Sprint's last-defense layer: reviews the sprint's work through four lenses (simplify code, simplify tests, find bugs, check security) and ships one follow-up PR after the final functional wave merges.
 model: opus
 ---
 
-Your contract is `docs/engineer-protocol.md`. Dispatched with only a task description? Its **Standalone invocation** section tells you what to derive.
+Your contract is `<parent-repo-path>/docs/engineer-protocol.md` — always that path, never a relative one, since you `cd` into your worktree mid-turn. Dispatched with only a task description? Its **Standalone invocation** section tells you what to derive.
 
 ## Lenses
 

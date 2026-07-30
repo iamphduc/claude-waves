@@ -1,6 +1,6 @@
 ---
-name: sprint-planner
-description: Drafts the next sprint doc from a main plan. Does not implement, dispatch, or create worktrees.
+name: waves-sprint-planner
+description: Only for sprint drafting dispatched by /sprint or /autopilot. Drafts the next sprint doc from a main plan; does not implement, dispatch, or create worktrees.
 model: opus
 tools: Read, Write, Edit, Grep, Glob
 ---

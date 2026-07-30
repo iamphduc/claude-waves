@@ -39,7 +39,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 1. **Sync** (skip on the first wave of the first sprint): confirm-on-resume the prior wave's PR.
 2. **Pre-create worktrees:** per slice, `git worktree add <parent-repo>/.claude/worktrees/<sprint-slug>-<slice-code>/ -b <branch-name> origin/<plan-slug>` — branch names from the sprint doc's Branch column.
-3. **Dispatch** per the Dispatch convention, subagent_type `engineer` for every slice.
+3. **Dispatch** per the Dispatch convention, subagent_type `waves-engineer` for every slice.
 4. **Translate concerns:** append each engineer's `Concerns` lines (`[TYPE] body`) to `docs/handoff-queue.md` per its template (`from: engineer`).
 5. **Update the status board:** set each slice's Status to `pushed` (or `blocked`) per `docs/templates/sprint.md`; the PR cell is filled in step 7.
 6. **Halt check.** Any `BLOCKED` concern this wave → halt, naming the trigger and queue entry. If >50% of the wave's slices ended `blocked`, first append a wave-summary `BLOCKED` entry from `orchestrator` and point the halt at it.
@@ -50,7 +50,7 @@ For each sprint row, read `docs/sprints/<sprint-slug>.md` (re-read on resume to 
 
 Go straight to the reviewer — no post-merge smoke gate.
 
-**Reviewer.** Dispatch the reviewer (subagent_type `reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
+**Reviewer.** Dispatch the reviewer (subagent_type `waves-reviewer`) over the sprint's diff; resume via gate-worktree on `<sprint-slug>-review` (merged → skip to archive).
 - **Dispatch:** pre-create `.claude/worktrees/<sprint-slug>-review/` off `origin/<plan-slug>`, then dispatch per convention with the sprint-slug and the sprint's merged slice branches.
 - **Triage & ship:** translate `PENDING`/`SOLVED` concerns, routing a `SEVERE:` `PENDING` to the hand-back, else into the Archive gate's end-of-turn message. `PR: clean` → skip to archive, else open a PR (`--base <plan-slug>`) and hand back per convention (`Sprint <sprint-slug> review awaiting merge`).
 

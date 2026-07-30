@@ -28,7 +28,7 @@ Wave membership lives in the **Wave** column — **computed by the planner, not 
 - **Sprint doc Status:** `active` while in `docs/sprints/`; flipped to `archived` immediately before `mv` to `docs/sprints/archive/`.
 - **Slice Status transitions:** `pending` → `pushed` → `done` (`blocked` terminal); `done` when the wave's PR merges.
 - **PR values (per wave):** `—` / the wave's PR URL (shared by its slices) / `blocked` / `skipped — verification failed` / `merged`.
-- **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail. It sizes waves and directs reviewer attention — it does **not** select an agent: every slice goes to the same `engineer`.
+- **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail. It sizes waves and directs reviewer attention — it does **not** select an agent: every slice goes to the same `waves-engineer`.
 - **Branch naming** (all flat kebab — **no `/`**, so none D/F-collide):
   - **Plan integration branch** `<plan-slug>` — cut off `main` once at plan start; all wave and reviewer PRs target it; one final PR merges it to `main` at plan end.
   - **Slice branch** `<sprint-slug>-<slice-code>` — an engineer's branch, off `<plan-slug>`.
