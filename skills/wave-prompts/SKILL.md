@@ -20,7 +20,7 @@ Check `origin` exists (`git remote get-url origin`), the merge-target is on orig
 
 Select the requested wave's slices (grouped by the **Wave** column). If that wave has no slices, say so and stop. Otherwise:
 
-1. Print a header: the wave number; the slices in it, each tagged with its difficulty from the status board; and the reminder — *launch one session per block **at the project root**, paste it; when all slices are pushed and green, integrate the wave (cut a wave head off `<plan-slug>`, merge the slice branches into it, verify, open one PR `--base <plan-slug>`), then re-run `/wave-prompts <slug> <next-wave>`. After the plan's last wave, open one final PR `<plan-slug>` → `<merge-target>`.*
+1. Print a header: the wave number; the slices in it; and the reminder — *launch one session per block **at the project root**, paste it; when all slices are pushed and green, integrate the wave (cut a wave head off `<plan-slug>`, merge the slice branches into it, verify, open one PR `--base <plan-slug>`), then re-run `/wave-prompts <slug> <next-wave>`. After the plan's last wave, open one final PR `<plan-slug>` → `<merge-target>`.*
 2. Print one fenced block per slice, filled from the sprint doc (if a slice lacks scope, files owned, or success criteria, flag it in the header instead of emitting a blank field):
 
    ```

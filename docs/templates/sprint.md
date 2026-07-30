@@ -4,16 +4,15 @@ _From plan: docs/plans/<plan-slug>.md · Slug: <sprint-slug> · Status: <active 
 
 ## Status board
 
-| Wave | Slice | Title | Difficulty | Branch | PR | Status | Depends on |
-|------|-------|-------|------------|--------|----|--------|------------|
-| 1 | <slice-code> | <one-line> | 1–5 | <branch-name> | — | pending | — |
+| Wave | Slice | Title | Branch | PR | Status | Depends on |
+|------|-------|-------|--------|----|--------|------------|
+| 1 | <slice-code> | <one-line> | <branch-name> | — | pending | — |
 
 Wave membership lives in the **Wave** column — **computed by the planner, not authored** (see Field semantics). Slices in a wave run in parallel and own disjoint files. Authored levels: **plan → sprint → slice**. Engineers push branches; the orchestrator integrates each wave into **one PR** on the plan branch (see **Branch naming**).
 
 ## Per-slice detail
 
 ### <slice-code>: <title>
-- **Difficulty justification:** <one line — why 1–5>
 - **Scope:** what to do; what NOT to do
 - **Files owned:** explicit paths (disjoint within the same wave)
 - **Success criteria:** concrete checks
@@ -28,7 +27,6 @@ Wave membership lives in the **Wave** column — **computed by the planner, not 
 - **Sprint doc Status:** `active` while in `docs/sprints/`; flipped to `archived` immediately before `mv` to `docs/sprints/archive/`.
 - **Slice Status transitions:** `pending` → `pushed` → `done` (`blocked` terminal); `done` when the wave's PR merges.
 - **PR values (per wave):** `—` / the wave's PR URL (shared by its slices) / `blocked` / `skipped — verification failed` / `merged`.
-- **Difficulty (1–5):** 1 = trivial; 3 = ordinary; 5 = architecture-touching or ambiguous. Scored per slice; justification belongs in the per-slice detail. It sizes waves and directs reviewer attention — it does **not** select an agent: every slice goes to the same `waves-engineer`.
 - **Branch naming** (all flat kebab — **no `/`**, so none D/F-collide):
   - **Plan integration branch** `<plan-slug>` — cut off `main` once at plan start; all wave and reviewer PRs target it; one final PR merges it to `main` at plan end.
   - **Slice branch** `<sprint-slug>-<slice-code>` — an engineer's branch, off `<plan-slug>`.
