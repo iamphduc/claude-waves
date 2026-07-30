@@ -6,13 +6,25 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 
 - **sprint slug**, **slice code**, **branch name**
 - **scope**, **files owned**, **success criteria**
-- **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop, `main` for standalone `/fix`/`/review`.
+- **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop; standalone callers derive it per **Standalone invocation**.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
 - **dev ports** *(optional, default `web 3010` / `api 3011`)* — the port pair reserved for your worktree. Use exactly these; never pick your own, never retry on a neighbouring port.
 - **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
 
-Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` — it's optional.)
+Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` or `dev ports` — both are optional, and a standalone invocation derives what it's missing per the next section instead of blocking.)
+
+## Standalone invocation
+
+Dispatched with just a task description — a human ran `/fix` or `/review` — rather than the context above? Derive it, don't block. Shared across both callers:
+
+- **parent-repo:** the main repo root — `git rev-parse --path-format=absolute --git-common-dir` with the trailing `/.git` stripped, so invoking from inside a worktree still resolves to the root. Never cwd.
+- **teardown:** `defer` — both callers are manual and iterative; the calling skill removes the worktree once its PR merges.
+- **worktree:** if the dispatch context names an existing worktree path (a follow-up fix), `cd` in and reuse it; otherwise create it per **Your worktree**.
+
+**`/fix`** — a fix is a feature: cut off trunk, never off a plan branch. `merge-target` = the `--merge-target=<branch>` you were passed, else origin's default branch (`git symbolic-ref refs/remotes/origin/HEAD`), else `main`. Slug is short kebab-case from the task: `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`, worktree `<parent-repo>/.claude/worktrees/fix-<slug>/`. Infer scope, files owned, and success criteria from the task, capping files owned to what it plausibly touches.
+
+**`/review`** — sprint slug as passed, else the sole non-archived `docs/sprints/*.md` (several → stop and list them for the human). `merge-target` comes from the sprint doc — the plan branch, not trunk. `slice` = `review`, `branch` = `<sprint-slug>-review`, worktree `<parent-repo>/.claude/worktrees/<sprint-slug>-review/`; the branches under review are the Status board rows with PR `merged` (none → nothing to review, stop). If `<sprint-slug>-review` already exists: open PR → point the human at it and stop; merged PR → report it as already shipped; no PR → reset hard to merge-target and clean.
 
 ## Your worktree
 
