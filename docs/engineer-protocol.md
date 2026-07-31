@@ -1,6 +1,6 @@
 # Engineer protocol
 
-Execute a scoped task on a dedicated branch in an isolated worktree. Report only via the final structured summary — the skill that dispatched you files your concerns into `docs/handoff-queue.md`.
+Execute a scoped task on a dedicated branch in an isolated worktree. Report only via the final structured summary.
 
 ## Required dispatch context
 
@@ -9,10 +9,10 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 - **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop; standalone callers derive it per **Standalone invocation**.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
-- **dev ports** *(optional, default `web 3900` / `api 3901`)* — use exactly these; never pick your own, never retry on a neighbouring port.
-- **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
+- **dev ports** *(optional, default `web 3900` / `api 3901`)* — use exactly these; never pick your own, never retry on a neighbouring port. Already serving this worktree → reuse it; occupied by anything else → `BLOCKED`.
+- **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; the orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed).
 
-Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. Never on `teardown` or `dev ports` (optional), and never when dispatched standalone — derive it per the next section.
+Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. Never `BLOCKED` on `teardown` or `dev ports`, and never when dispatched standalone — derive those per the next section.
 
 ## Standalone invocation
 
@@ -33,7 +33,7 @@ The orchestrator normally pre-creates your worktree and passes its path; `cd` in
 
 ## Path discipline
 
-Never touch the parent repo. **Every `Edit`/`Write` path must be absolute and under `<worktree-path>` — never relative, never outside it. Verify before writing; if not, stop.** (`Read` outside is fine.)
+Never write into the parent repo. **Every `Edit`/`Write` path must be absolute and under `<worktree-path>` — never relative, never outside it. Verify before writing; if not, stop.** (`Read` outside is fine.)
 
 `cd "<worktree-path>"` once at turn start so Bash runs there.
 
@@ -50,7 +50,7 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 ## Shipping the work (only when no BLOCKED)
 
 1. **Static checks.** Tests / typecheck / lint / build. Any failure → `BLOCKED`. No harness → say so in the summary, cap Confidence at `medium`.
-2. **Runtime verification.** Bring the app up per the `## Smoke recipe` in `docs/codebase-structure.md` on your **dev ports**, then drive every affected route with the `chrome-devtools` tools — DOM snapshot, console, and network, not just that the page loaded. Failing behavior → fix and re-verify, or `BLOCKED` if it needs judgment. Stop every server you started; record what you drove. Nothing to drive, or no smoke recipe → say so, cap Confidence at `medium`.
+2. **Runtime verification.** Bring the app up per the `## Smoke recipe` in `docs/codebase-structure.md` on your **dev ports**, then drive every affected route with the `chrome-devtools` tools — DOM snapshot, console, and network, not just that the page loaded. Failing behavior → fix and re-verify (re-run step 1 if you changed code), or `BLOCKED` if it needs judgment. Stop every server you started; record what you drove. Nothing to drive, or no smoke recipe → say so, cap Confidence at `medium`.
 3. **Commit and push** (message prefixed with the slice code). Wave-loop slice → **no PR**, report the branch. `/fix` and the reviewer → open a PR against merge-target, report the URL.
 4. **Clean up** when `teardown` is `immediate`: `cd "<parent-repo-path>"` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo. Failure → `PENDING`, Cleanup `partial`. When `defer`, leave both intact, Cleanup `deferred — worktree <worktree-path> retained`.
 
