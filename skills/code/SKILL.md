@@ -26,6 +26,7 @@ Before pre-creating worktrees, halt naming the first check that fails:
 - `origin` remote exists (`git remote get-url origin`).
 - The merge-target is on origin (`git ls-remote --heads origin <merge-target>` returns a ref).
 - Every non-slice prerequisite (new dependencies, the plan/sprint docs) is committed and pushed to the merge-target.
+- `docs/codebase-structure.md`'s `## Smoke recipe` is filled in — no `<!-- … -->` placeholders left. Unfilled, every engineer caps Confidence at `medium` and ships unverified, and gate 6 doesn't catch it.
 
 Then **create the plan integration branch** (skip if `git ls-remote --heads origin <plan-slug>` exists — resuming): `git fetch origin && git branch <plan-slug> origin/<merge-target> && git push -u origin <plan-slug>`.
 
