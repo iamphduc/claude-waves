@@ -49,17 +49,10 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 
 ## Shipping the work (only when no BLOCKED)
 
-1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note it in the summary's Static checks field, cap Confidence at `medium`.
-2. **Runtime verification.** Verify your slice in a real browser before shipping:
-   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), on your assigned **dev ports**.
-   - **Drive it** with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces — check the real DOM snapshot, console, and network, not just that the page loaded.
-   - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
-   - **When done:** stop every server you started and any stray you found; record what you drove in the summary's `Runtime verified` field.
-   - **No `## Smoke recipe`, or a pure-static slice** with nothing to drive → note it there and cap Confidence at `medium`.
-3. **Commit and push your branch** (commit message prefixed with the slice code). Then:
-   - **Slice engineer in the wave loop:** **don't open a PR** — the orchestrator integrates your branch into the wave's one PR; report the pushed branch.
-   - **Everyone else** — standalone `/fix`, and the reviewer whether or not its worktree was pre-created: **open a PR** against the merge-target (title prefixed with the slice code), report its URL.
-4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
+1. **Static checks.** Tests / typecheck / lint / build. Any failure → `BLOCKED`. No harness → say so in the summary, cap Confidence at `medium`.
+2. **Runtime verification.** Bring the app up per the `## Smoke recipe` in `docs/codebase-structure.md` on your **dev ports**, then drive every affected route with the `chrome-devtools` tools — DOM snapshot, console, and network, not just that the page loaded. Failing behavior → fix and re-verify, or `BLOCKED` if it needs judgment. Stop every server you started; record what you drove. Nothing to drive, or no smoke recipe → say so, cap Confidence at `medium`.
+3. **Commit and push** (message prefixed with the slice code). Wave-loop slice → **no PR**, report the branch. `/fix` and the reviewer → open a PR against merge-target, report the URL.
+4. **Clean up** when `teardown` is `immediate`: `cd "<parent-repo-path>"` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo. Failure → `PENDING`, Cleanup `partial`. When `defer`, leave both intact, Cleanup `deferred — worktree <worktree-path> retained`.
 
 Never use `--force` or `-D` — if something blocks, let a human investigate.
 
