@@ -9,25 +9,25 @@ Execute a scoped task on a dedicated branch in an isolated worktree. Report only
 - **merge-target branch** — the branch you base your worktree on and the orchestrator integrates into: `<plan-slug>` under the wave loop; standalone callers derive it per **Standalone invocation**.
 - **parent-repo path** — absolute path of the main repo
 - **worktree path** — absolute path of your working dir
-- **dev ports** *(optional, default `web 3900` / `api 3901` — outside the range dispatchers assign, so a standalone run can't collide with a live wave)* — the port pair reserved for your worktree. Use exactly these; never pick your own, never retry on a neighbouring port.
+- **dev ports** *(optional, default `web 3900` / `api 3901`)* — use exactly these; never pick your own, never retry on a neighbouring port.
 - **teardown** *(optional, default `immediate`)* — `defer` (leave the worktree after pushing; orchestrator removes it post-merge) or `immediate` (remove it yourself once pushed — the orchestrator integrates from the origin ref).
 
-Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. (Never `BLOCKED` on `teardown` or `dev ports` — both are optional, and a standalone invocation derives what it's missing per the next section instead of blocking.)
+Any required field missing → minimal summary with a `BLOCKED` concern naming the gaps, skip all work, end. Never on `teardown` or `dev ports` (optional), and never when dispatched standalone — derive it per the next section.
 
 ## Standalone invocation
 
-Dispatched with just a task description — a human ran `/fix` or `/waves-review` — rather than the context above? Derive it, don't block. Shared across both callers:
+Only `/fix` dispatches you with just a task description. Derive the rest, don't block:
 
-- **parent-repo:** the main repo root — `git rev-parse --path-format=absolute --git-common-dir` with the trailing `/.git` stripped, so invoking from inside a worktree still resolves to the root. Never cwd.
-- **worktree:** if the dispatch context names an existing worktree path (a follow-up fix), `cd` in and reuse it; otherwise create it per **Your worktree**.
-
-**`/fix`** — a fix is a feature: cut off trunk, never off a plan branch. `teardown` = `defer`: the `/fix` loop is iterative, so leave the worktree up for follow-ups and let that loop remove it once the PR merges. `merge-target` = the `--merge-target=<branch>` you were passed, else origin's default branch (`git symbolic-ref refs/remotes/origin/HEAD`), else `main`. Slug is short kebab-case from the task: `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`, worktree `<parent-repo>/.claude/worktrees/fix-<slug>/`. Infer scope, files owned, and success criteria from the task, capping files owned to what it plausibly touches.
-
-**`/waves-review`** — one-shot: no follow-up loop exists to clean up after you, so `teardown` = `immediate` — remove your own worktree and branch per **Shipping** step 4. Sprint slug as passed, else the sole non-archived `docs/sprints/*.md` (several → stop and list them for the human). `merge-target` comes from the sprint doc — the plan branch, not trunk. `slice` = `review`, `branch` = `<sprint-slug>-review`, worktree `<parent-repo>/.claude/worktrees/<sprint-slug>-review/`; the branches under review are the Status board rows with PR `merged` (none → nothing to review, stop). If `<sprint-slug>-review` already exists: open PR → point the human at it and stop; merged PR → report it as already shipped; no PR → reset hard to merge-target and clean.
+- **parent-repo:** `git rev-parse --path-format=absolute --git-common-dir`, trailing `/.git` stripped. Never cwd.
+- **merge-target:** the `--merge-target=<branch>` you were passed, else origin's default branch (`git symbolic-ref refs/remotes/origin/HEAD`), else `main`. A fix cuts off trunk, never off a plan branch.
+- **naming:** slug is short kebab-case from the task — `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`, worktree `<parent-repo>/.claude/worktrees/fix-<slug>/`.
+- **scope, files owned, success criteria:** infer from the task, capping files owned to what it plausibly touches.
+- **teardown:** `defer` — the `/fix` loop removes the worktree once the PR merges.
+- **worktree:** a follow-up fix names an existing worktree path — `cd` in and reuse it; otherwise create it per **Your worktree**.
 
 ## Your worktree
 
-The orchestrator normally pre-creates your worktree and passes its path; `cd` into it. If it doesn't exist (standalone `/fix`/`/waves-review`, or a pasted prompt), create it first:
+The orchestrator normally pre-creates your worktree and passes its path; `cd` into it. If it doesn't exist (standalone `/fix`, or a pasted prompt), create it first:
 
 `git fetch origin && git worktree add <worktree-path> -b <branch-name> origin/<merge-target>`
 
@@ -52,10 +52,10 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note it in the summary's Static checks field, cap Confidence at `medium`.
 2. **Runtime verification.** Verify your slice in a real browser before shipping:
    - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), on your assigned **dev ports**:
-     - Check whether a server for *this worktree* is already listening on your port; reuse it instead of starting a second one.
-     - Start it as a background tool call (`run_in_background: true`) — never a `nohup … &` wrapper. The wrapper exits immediately, so the harness reports the still-running server as "completed" and you lose both the log handle and the PID.
+     - Already listening on your port for *this worktree*? Reuse it; don't start a second.
+     - Start it as a background tool call (`run_in_background: true`), never a `nohup … &` wrapper — that wrapper exits at once and orphans the log handle and PID.
      - Wait for the ready line in the log, not a fixed `sleep`.
-     - Two servers sharing one build-cache dir corrupt it. Compile/cache errors right after a restart mean a stray process is still running — kill the stray; deleting the cache is not the first move.
+     - Compile/cache errors right after a restart mean a stray process on the same build-cache dir — kill the stray before touching the cache.
    - **Drive it** with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces — check the real DOM snapshot, console, and network, not just that the page loaded.
    - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
    - **When done:** stop every server you started and any stray you found; record what you drove in the summary's `Runtime verified` field.
@@ -63,7 +63,7 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 3. **Commit and push your branch** (commit message prefixed with the slice code). Then:
    - **Slice engineer in the wave loop:** **don't open a PR** — the orchestrator integrates your branch into the wave's one PR; report the pushed branch.
    - **Everyone else** — standalone `/fix`, and the reviewer whether or not its worktree was pre-created: **open a PR** against the merge-target (title prefixed with the slice code), report its URL.
-4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` (you can't remove a worktree you're standing in) → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo — it changes the human's checked-out branch, and concurrent engineers would race each other for it. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
+4. **Clean up — only when `teardown` is `immediate`:** `cd "<parent-repo-path>"` → `git worktree remove <worktree-path>` → `git branch -d <branch-name>`. Never `git checkout` in the parent repo. On failure → `PENDING`, set Cleanup to `partial`, stop further cleanup. When `defer`, skip removal: leave worktree and branch intact for the orchestrator's post-merge teardown, set Cleanup to `deferred — worktree <worktree-path> retained`.
 
 Never use `--force` or `-D` — if something blocks, let a human investigate.
 
