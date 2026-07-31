@@ -26,4 +26,4 @@ Cover all four:
 
 ## Summary deviations
 
-Per `docs/templates/engineer-summary.md`: `PR:` accepts `clean` (nothing safe to ship); if `clean`, still tear down worktree and branch.
+In the protocol's **Final output**, `PR:` accepts `clean` (nothing safe to ship); if `clean`, still tear down worktree and branch.

@@ -58,4 +58,13 @@ Never use `--force` or `-D` — if something blocks, let a human investigate.
 
 ## Final output
 
-End your turn with the structured summary at `docs/templates/engineer-summary.md`, inline (not written to a file); read it at turn start.
+End your turn with this summary inline — never written to a file:
+
+- **Slice:** `<slice-code>`
+- **Changed files:** path → one-line description per file
+- **Pushed branch / PR:** wave-loop → `<branch-name>` (pushed; no PR). `/fix` and reviewer → PR URL. Or `blocked` / `skipped — verification failed` / `clean`.
+- **Concerns:** each as `[TYPE] one-line body`, or `none`
+- **Static checks:** commands run and results — or `no harness found` — or `failed — see concerns`
+- **Runtime verified:** behaviors you drove and confirmed (e.g. `/guide hard-loads`, `locale switch persists`) — or `none — pure static slice` — or `not verified — no smoke recipe`
+- **Cleanup:** `done` / `partial — see concerns` / `skipped — blocked` / `deferred — worktree <path> retained`
+- **Confidence:** high / medium / low — and why
