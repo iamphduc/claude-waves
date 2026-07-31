@@ -51,11 +51,7 @@ Any `BLOCKED` → stop immediately: no push, no PR, no cleanup. Leave the worktr
 
 1. **Static checks.** Run the project's headless checks (tests / typecheck / lint / build). Any failure → `BLOCKED`, stop. No harness → note it in the summary's Static checks field, cap Confidence at `medium`.
 2. **Runtime verification.** Verify your slice in a real browser before shipping:
-   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), on your assigned **dev ports**:
-     - Already listening on your port for *this worktree*? Reuse it; don't start a second.
-     - Start it as a background tool call (`run_in_background: true`), never a `nohup … &` wrapper — that wrapper exits at once and orphans the log handle and PID.
-     - Wait for the ready line in the log, not a fixed `sleep`.
-     - Compile/cache errors right after a restart mean a stray process on the same build-cache dir — kill the stray before touching the cache.
+   - **Bring the app up** per the `## Smoke recipe` in `docs/codebase-structure.md` (start commands, DB setup, URLs, seeded credentials), on your assigned **dev ports**.
    - **Drive it** with the `chrome-devtools` tools: navigate to each affected route and confirm every runtime-observable behavior your slice introduces — check the real DOM snapshot, console, and network, not just that the page loaded.
    - **On a failing behavior:** fix and re-verify, or `BLOCKED` if it needs judgment.
    - **When done:** stop every server you started and any stray you found; record what you drove in the summary's `Runtime verified` field.
