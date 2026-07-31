@@ -33,11 +33,13 @@ Refresh the agents/skills/templates and policy docs to the latest. It only overw
 curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.sh | bash
 ```
 
-Because it never deletes, retired agents linger. Every agent now ships under a `waves-` prefix so it can't collide with — or silently overwrite — an agent of your own. If you installed before that, remove the old copies by hand, otherwise an in-flight sprint doc can still dispatch them:
+Because it never deletes, retired files linger. Agents now ship under a `waves-` prefix so they can't collide with — or silently overwrite — an agent of your own, and the standalone review skill is gone (`/code` dispatches the reviewer itself). If you installed before that, remove the old copies by hand — otherwise an in-flight sprint doc can still dispatch them, and the stale `/review` skill points at an agent you just deleted:
 
 ```bash
-rm -f .claude/agents/engineer-junior.md .claude/agents/engineer-senior.md \
-      .claude/agents/reviewer.md .claude/agents/sprint-planner.md
+rm -f  .claude/agents/engineer-junior.md .claude/agents/engineer-senior.md \
+       .claude/agents/reviewer.md .claude/agents/sprint-planner.md \
+       docs/templates/engineer-summary.md
+rm -rf .claude/skills/review .claude/skills/waves-review
 ```
 
 ## Manual flow — you ride each wave
