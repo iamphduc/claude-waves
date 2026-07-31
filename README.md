@@ -33,6 +33,13 @@ Refresh the agents/skills/templates and policy docs to the latest. It only overw
 curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.sh | bash
 ```
 
+Because it never deletes, retired agents linger. Every agent now ships under a `waves-` prefix so it can't collide with — or silently overwrite — an agent of your own. If you installed before that, remove the old copies by hand, otherwise an in-flight sprint doc can still dispatch them:
+
+```bash
+rm -f .claude/agents/engineer-junior.md .claude/agents/engineer-senior.md \
+      .claude/agents/reviewer.md .claude/agents/sprint-planner.md
+```
+
 ## Manual flow — you ride each wave
 
 | Step | Skill | What happens |
@@ -45,6 +52,17 @@ curl -fsSL https://raw.githubusercontent.com/iamphduc/claude-waves/main/update.s
 | 4 | *reviewer (auto)* | Code audit; opens a follow-up PR onto the plan branch or returns `PR: clean` |
 | — | merge review PR, reply `continue` | Sprint archives; `continue` chains into the next sprint |
 | 5 | *plan complete* | One final PR merges the plan branch → `main` |
+
+### Which command, and what it branches off
+
+The three execution commands differ by **base branch**, not by size of change:
+
+| Command | Cuts off | Lands on | Cleans up after itself |
+|---|---|---|---|
+| `/code`, `/autopilot` | the plan branch | plan branch, one PR per wave | the orchestrator, post-merge |
+| `/fix <task>` | trunk (`origin`'s default branch, or `--merge-target=`) | trunk, one PR | the `/fix` loop, after you merge |
+
+`/fix` is for work that stands alone — it never touches a plan branch, so running it mid-plan gives you a change that diverges from the plan until both land on trunk. The reviewer has no command of its own: `/code` dispatches it automatically at sprint end, and re-runs it on resume if its PR isn't merged.
 
 ## Autonomous flow — the waves ride themselves
 
