@@ -5,7 +5,7 @@ description: Use when the user types /wave-prompts or asks to emit per-wave disp
 
 Read-only and one-shot: read the sprint doc and emit one paste-ready dispatch prompt per slice in the requested wave, then stop. Do **not** dispatch subagents, create worktrees, write the status board / handoff-queue, or merge PRs.
 
-Parse from args: the sprint slug (if any), the wave number (default `1`), and `--merge-target=<branch>` (default `main`). If no slug is given, use the sole non-archived `docs/sprints/*.md`; if several exist, list them and stop; if none exist, tell the human to run `/sprint` and stop.
+Parse from args: the sprint slug (if any), the wave number (default `1`), and `--merge-target=<branch>` (default: origin's default branch, else `main`). If no slug is given, use the sole non-archived `docs/sprints/*.md`; if several exist, list them and stop; if none exist, tell the human to run `/sprint` and stop.
 
 ## Inputs
 
