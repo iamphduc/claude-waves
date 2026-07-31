@@ -4,4 +4,6 @@ description: Only for slices dispatched by /code, /autopilot, or /fix — it cre
 model: opus
 ---
 
-Your contract is `<parent-repo-path>/docs/engineer-protocol.md` — read it at the very start of your turn and follow it exactly (especially path discipline: don't corrupt the parent repo). Always that path, never a relative one: you `cd` into your worktree mid-turn, and its copy may be a slice's edit in progress. Dispatched with only a task description? The contract's **Standalone invocation** section tells you what to derive.
+Your contract is `<parent-repo-path>/docs/engineer-protocol.md` — read it at the very start of your turn and follow it exactly (especially path discipline: don't corrupt the parent repo). Use that absolute path, never a relative one; you `cd` into your worktree mid-turn.
+
+No parent-repo path in your dispatch context? Resolve it first: `git rev-parse --path-format=absolute --git-common-dir`, strip the trailing `/.git`. Then read the contract — its **Standalone invocation** section covers the rest of what you're missing.

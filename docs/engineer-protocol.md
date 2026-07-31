@@ -16,19 +16,18 @@ Any required field missing → minimal summary with a `BLOCKED` concern naming t
 
 ## Standalone invocation
 
-Dispatched with just a task description — a human ran `/fix` or `/review` — rather than the context above? Derive it, don't block. Shared across both callers:
+Dispatched with just a task description — a human ran `/fix` or `/waves-review` — rather than the context above? Derive it, don't block. Shared across both callers:
 
 - **parent-repo:** the main repo root — `git rev-parse --path-format=absolute --git-common-dir` with the trailing `/.git` stripped, so invoking from inside a worktree still resolves to the root. Never cwd.
-- **teardown:** `defer` — both callers are manual and iterative; the calling skill removes the worktree once its PR merges.
 - **worktree:** if the dispatch context names an existing worktree path (a follow-up fix), `cd` in and reuse it; otherwise create it per **Your worktree**.
 
-**`/fix`** — a fix is a feature: cut off trunk, never off a plan branch. `merge-target` = the `--merge-target=<branch>` you were passed, else origin's default branch (`git symbolic-ref refs/remotes/origin/HEAD`), else `main`. Slug is short kebab-case from the task: `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`, worktree `<parent-repo>/.claude/worktrees/fix-<slug>/`. Infer scope, files owned, and success criteria from the task, capping files owned to what it plausibly touches.
+**`/fix`** — a fix is a feature: cut off trunk, never off a plan branch. `teardown` = `defer`: the `/fix` loop is iterative, so leave the worktree up for follow-ups and let that loop remove it once the PR merges. `merge-target` = the `--merge-target=<branch>` you were passed, else origin's default branch (`git symbolic-ref refs/remotes/origin/HEAD`), else `main`. Slug is short kebab-case from the task: `sprint slug` = `fix`, `slice code` = `<slug>`, `branch` = `fix-<slug>`, worktree `<parent-repo>/.claude/worktrees/fix-<slug>/`. Infer scope, files owned, and success criteria from the task, capping files owned to what it plausibly touches.
 
-**`/review`** — sprint slug as passed, else the sole non-archived `docs/sprints/*.md` (several → stop and list them for the human). `merge-target` comes from the sprint doc — the plan branch, not trunk. `slice` = `review`, `branch` = `<sprint-slug>-review`, worktree `<parent-repo>/.claude/worktrees/<sprint-slug>-review/`; the branches under review are the Status board rows with PR `merged` (none → nothing to review, stop). If `<sprint-slug>-review` already exists: open PR → point the human at it and stop; merged PR → report it as already shipped; no PR → reset hard to merge-target and clean.
+**`/waves-review`** — one-shot: no follow-up loop exists to clean up after you, so `teardown` = `immediate` — remove your own worktree and branch per **Shipping** step 4. Sprint slug as passed, else the sole non-archived `docs/sprints/*.md` (several → stop and list them for the human). `merge-target` comes from the sprint doc — the plan branch, not trunk. `slice` = `review`, `branch` = `<sprint-slug>-review`, worktree `<parent-repo>/.claude/worktrees/<sprint-slug>-review/`; the branches under review are the Status board rows with PR `merged` (none → nothing to review, stop). If `<sprint-slug>-review` already exists: open PR → point the human at it and stop; merged PR → report it as already shipped; no PR → reset hard to merge-target and clean.
 
 ## Your worktree
 
-The orchestrator normally pre-creates your worktree and passes its path; `cd` into it. If it doesn't exist (standalone `/fix`/`/review`, or a pasted prompt), create it first:
+The orchestrator normally pre-creates your worktree and passes its path; `cd` into it. If it doesn't exist (standalone `/fix`/`/waves-review`, or a pasted prompt), create it first:
 
 `git fetch origin && git worktree add <worktree-path> -b <branch-name> origin/<merge-target>`
 

@@ -4,7 +4,9 @@ description: Only for sprint review dispatched by /code, /autopilot, or /review 
 model: opus
 ---
 
-Your contract is `<parent-repo-path>/docs/engineer-protocol.md` — always that path, never a relative one, since you `cd` into your worktree mid-turn. Dispatched with only a task description? Its **Standalone invocation** section tells you what to derive.
+Your contract is `<parent-repo-path>/docs/engineer-protocol.md` — use that absolute path, never a relative one, since you `cd` into your worktree mid-turn.
+
+No parent-repo path in your dispatch context? Resolve it first: `git rev-parse --path-format=absolute --git-common-dir`, strip the trailing `/.git`. Then read the contract — its **Standalone invocation** section covers the rest of what you're missing.
 
 ## Lenses
 

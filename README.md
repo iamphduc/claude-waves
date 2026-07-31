@@ -53,6 +53,18 @@ rm -f .claude/agents/engineer-junior.md .claude/agents/engineer-senior.md \
 | — | merge review PR, reply `continue` | Sprint archives; `continue` chains into the next sprint |
 | 5 | *plan complete* | One final PR merges the plan branch → `main` |
 
+### Which command, and what it branches off
+
+The three execution commands differ by **base branch**, not by size of change:
+
+| Command | Cuts off | Lands on | Cleans up after itself |
+|---|---|---|---|
+| `/code`, `/autopilot` | the plan branch | plan branch, one PR per wave | the orchestrator, post-merge |
+| `/fix <task>` | trunk (`origin`'s default branch, or `--merge-target=`) | trunk, one PR | the `/fix` loop, after you merge |
+| `/waves-review [slug]` | the plan branch, from the sprint doc | plan branch, one PR or `clean` | the reviewer itself |
+
+`/fix` is for work that stands alone — it never touches a plan branch, so running it mid-plan gives you a change that diverges from the plan until both land on trunk. `/waves-review` runs the sprint gate that `/code` invokes automatically at sprint end; it reviews a sprint's merged slice branches, so it needs a sprint doc and cannot review a working diff or a PR.
+
 ## Autonomous flow — the waves ride themselves
 
 `/autopilot [plan-slug] [--max-sprints=N] [--max-waves=N] [--max-runtime=Nh]` runs the whole plan unattended: dispatches each wave, integrates + verifies it, auto-merges the wave PR onto the plan branch (escalating risky ones), chains sprints, then opens and merges the final plan→`main` PR — halting + notifying at each gate. Invoking it is your consent to the auto-merges. Criteria, defaults, and resume behavior live in `docs/autonomous-policy.md`.
